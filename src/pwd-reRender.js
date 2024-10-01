@@ -380,6 +380,3 @@ function openImgView(imgsrc, imgTitle) {
 //修改Scroll-View到真实高度
 contentBG.style.height=`${contentBG.offsetHeight+appbar.offsetHeight}px`;
 console.output("修改页面真实高度\ncontentBG.style.height="+contentBG.style.height);
-
-//移除不必要的元素
-document.getElementById("old_menu")/* 该元素为加载新UI失败时平替，即老UI */.setAttribute("style", "display:none;");
