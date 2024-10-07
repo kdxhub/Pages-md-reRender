@@ -23,4 +23,4 @@ Z</s-chip>
 
 > 如果您选择自行编写其中的内容，请将`conf_sidebar_links_preventDefault`的值设置为`true`
 
-<script src="https://unpkg.com/sober@0.3.2/dist/sober.min.js"></script><script src="https://kdxiaoyi.top/Pages-md-reRender/res/pmdrr.js"></script>
+<script src="https://unpkg.com/sober@0.4.2/dist/sober.min.js"></script><script src="https://kdxiaoyi.top/Pages-md-reRender/res/pmdrr.js"></script>

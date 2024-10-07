@@ -1,8 +1,8 @@
----
+>---
 title: "页面特殊设置项"
 description: ""
 ---
-
+##概述
 页面特殊设置项存于id为`mdRender_config`的`div`元素内。<br>
 在md文件内任意一处地方插入以下代码（建议文末）以开启特殊设置。
 ```html
@@ -17,7 +17,7 @@ data-sideship-hide="0"
 ```
 这段代码表示自定义配置`sideship-hide`的值为`0`。<br>
 
-# 自定义配置表
+## 自定义配置表
 ### `sideship-hide`
 表示要标志的边栏链接的编号。<br>
 
@@ -33,4 +33,4 @@ data-sideship-hide="0"
 ### `title`
 只要存在此配置，强制将Appbar的标题设置为其值，而不从页面中读取。
 
-<script src="https://unpkg.com/sober@0.3.2/dist/sober.min.js"></script><script src="https://kdxiaoyi.top/Pages-md-reRender/res/pmdrr.js"></script>
+<script src="https://unpkg.com/sober@0.4.2/dist/sober.min.js"></script><script src="https://kdxiaoyi.top/Pages-md-reRender/res/pmdrr.js"></script>

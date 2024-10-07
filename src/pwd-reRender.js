@@ -2,31 +2,39 @@
 // Powered by SoberJS
 // 自定义设置项区
 const /*文章授权协议*/conf_licen=`CC BY-NC 4.0`;
-const /*文章授权协议链接*/conf_licen_link=`https://kdxiaoyi.top/our_license`;
+const /*文章授权协议链接*/conf_licen_link=`https://creativecommons.org/licenses/by-nc/4.0/legalcode.zh-hans`;
 const /*在代码块下方添加复制代码按钮*/conf_codeCopyBtn=true;
 const /*允许点击图片来查看大图*/conf_imgView=true;
 const   /*启用查看大图对imgse图床的自动去除.md.缩略图后缀*/conf_imgView_imgse=true;
 const   /*启用查看大图查看原图 跳转至imgse查看页而不是源文件*/conf_imgView_imgse_noRes=true;
 const   /*启用查看大图查看原图按钮*/conf_imgView_open=true;
-const /*启用建站时长计时 [是否启用t/f,年,月,日]*/conf_time=[true,2022,7,20];
+const /*启用建站时长计时 [是否启用t/f,年,月,日]*/conf_time=[false,2022,7,20];
 const /*左侧边栏·一言*/conf_saying=`Keep the spirit of Touching 𝕏.`;
-const /*左侧边栏·第1格·背景图片*/conf_sidebar_headimg_src=`https://kdxiaoyi.top/favicon.ico`;
-const   /*左侧边栏·第1格·背景图片描述*/conf_sidebar_headimg_alt=`@kdxiaoyi`;
+const /*左侧边栏·第1格·背景图片*/conf_sidebar_headimg_src=``;
+const   /*左侧边栏·第1格·背景图片描述*/conf_sidebar_headimg_alt=``;
 const /*左侧边栏·第2格内容*/conf_sidebar_links=`
 <s-chip id="side_ship_0" onclick="openURL('/','')" clickable="true" class="sidebar_btn">
 <s-icon slot="start" type="home"></s-icon>
 主页 Homepage</s-chip>
-<s-chip id="side_ship_1" onclick="openURL('https://kdxiaoyi.top/blogs','')" clickable="true" class="sidebar_btn">
+<s-chip id="side_ship_1" onclick="openURL('/blogs','')" clickable="true" class="sidebar_btn">
 <s-icon slot="start"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960"><path d="M320-320h480v-120H698q-21 37-58 58.5T560-360q-42 0-79-21.5T422-440H320v120Zm240-120q34 0 57-23.5t23-56.5h160v-280H320v280h160q0 33 23.5 56.5T560-440ZM320-240q-33 0-56.5-23.5T240-320v-480q0-33 23.5-56.5T320-880h480q33 0 56.5 23.5T880-800v480q0 33-23.5 56.5T800-240H320ZM160-80q-33 0-56.5-23.5T80-160v-560h80v560h560v80H160Zm160-240h480-480Z"></path></svg></s-icon>
 博客 Blog</s-chip>
-<s-chip id="side_ship_2" onclick="openURL('https://kdxiaoyi.top/Project','')" clickable="true" class="sidebar_btn">
+<s-chip id="side_ship_2" onclick="openURL('/project','')" clickable="true" class="sidebar_btn">
 <s-icon slot="start"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960"><path d="M440-183v-274L200-596v274l240 139Zm80 0 240-139v-274L520-457v274Zm-40-343 237-137-237-137-237 137 237 137ZM160-252q-19-11-29.5-29T120-321v-318q0-22 10.5-40t29.5-29l280-161q19-11 40-11t40 11l280 161q19 11 29.5 29t10.5 40v318q0 22-10.5 40T800-252L520-91q-19 11-40 11t-40-11L160-252Zm320-228Z"></path></svg></s-icon>
 项目 Project</s-chip>
-<s-chip id="side_ship_3" onclick="openURL('https://space.bilibili.com/1987247870')" clickable="true" class="sidebar_btn">
+<s-chip id="side_ship_3" onclick="openURL('https://space.bilibili.com/1')" clickable="true" class="sidebar_btn">
 <s-icon slot="start"><svg width="100px" height="100px" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><g><path fill="none" d="M0 0h24v24H0z"/><path d="M18.223 3.086a1.25 1.25 0 0 1 0 1.768L17.08 5.996h1.17A3.75 3.75 0 0 1 22 9.747v7.5a3.75 3.75 0 0 1-3.75 3.75H5.75A3.75 3.75 0 0 1 2 17.247v-7.5a3.75 3.75 0 0 1 3.75-3.75h1.166L5.775 4.855a1.25 1.25 0 1 1 1.767-1.768l2.652 2.652c.079.079.145.165.198.257h3.213c.053-.092.12-.18.199-.258l2.651-2.652a1.25 1.25 0 0 1 1.768 0zm.027 5.42H5.75a1.25 1.25 0 0 0-1.247 1.157l-.003.094v7.5c0 .659.51 1.199 1.157 1.246l.093.004h12.5a1.25 1.25 0 0 0 1.247-1.157l.003-.093v-7.5c0-.69-.56-1.25-1.25-1.25zm-10 2.5c.69 0 1.25.56 1.25 1.25v1.25a1.25 1.25 0 1 1-2.5 0v-1.25c0-.69.56-1.25 1.25-1.25zm7.5 0c.69 0 1.25.56 1.25 1.25v1.25a1.25 1.25 0 1 1-2.5 0v-1.25c0-.69.56-1.25 1.25-1.25z"/></g></svg></s-icon>
 Bilibili ↗</s-chip>`;
 const /*左侧边栏·第2格内容中没有按文档编写请启用此项*/conf_sidebar_links_preventDefault=false;
-const /*插件版本（建议不要修改）*/PluginVer=["1.0.12",12];
+const /*复制文本后向文本末尾添加来源出处，为空时禁用
+      %LINK% 指代页面链接
+      %TITLE% 指代标题  %ETITLE% 指代文章标题  区别在于前者是标题栏的标题，后者是检测到的文章标题
+      可以使用${}来引用页面中已有的配置项，例如${conf_licen}可以指代授权协议*/
+      conf_copy_endnote=` ‖ 来自[%ETITLE%](%LINK%)，以${conf_licen}协议授权。`;
+const /*图片加载失败后的占位符图片*/conf_img_error_replace="https://rs.kdxiaoyi.top/res/images/load_err.svg";
+
+//下方常量不建议修改
+const /*插件版本（建议不要修改）*/PluginVer=["1.1.0",14];
 
 //插入重渲染代码
 document.body.innerHTML = `
@@ -44,7 +52,6 @@ document.body.innerHTML = `
       width: 100vw;
       flex-grow:1;
       overflow: auto;
-      user-select: text;
     }
     .sidebar_btn {
       width:100%;
@@ -85,6 +92,7 @@ document.body.innerHTML = `
       display: block;
     }
     code.processed {}
+    .selectable {user-select:text;}
   </style>
   <s-page theme="auto" class="page_root" id="page_root">
     <s-dialog style="display:none;" id="img_dialog" size="full">
@@ -115,14 +123,14 @@ document.body.innerHTML = `
           </s-card><br>
           <s-card type="" class="sidebar_head">${conf_sidebar_links}</s-card><br>
           <s-card type="" class="sidebar_head">
-            <div id="saying"><center>${conf_saying}</center></div>
+            <div id="saying" class="selectable"><center>${conf_saying}</center></div>
             <div id="time"><center><small>Since 2022-07-19</small></center></div>
-            <div id="saying"><center><small>以<a href="${conf_licen_link}">${conf_licen}</a>协议提供内容</small></center></div>
+            <div id="license"><center><small>以<a href="${conf_licen_link}">${conf_licen}</a>协议提供内容</small></center></div>
           </s-card>
         </div>
       </div>
       <div>
-        <s-scroll-view id="contentScroll" style="max-height:100%;"><div id="contentBG">
+        <s-scroll-view id="contentScroll" style="max-height:100%;"><div id="contentBG" class="selectable">
   <!-- 页面重渲染插入代码结束 -->
   `+document.body.innerHTML+`
         </div></s-scroll-view></div>
@@ -157,7 +165,7 @@ if (getQueryString("debug")!=null) {debug(true);msg("检测到调试命令行","
 // 封装的通用API函数
   /* 列出所有封装的Function:
       getQueryString(name)
-      msg(Message, ConfirmText)
+      msg(Message, ConfirmText, isWarning)
       debug(mode)
       console.output(Message)
       scrollToTop()
@@ -168,7 +176,7 @@ if (getQueryString("debug")!=null) {debug(true);msg("检测到调试命令行","
       RefreshCountup(StartY,StartM,StartD)
       selectAllTextInElement(element)
       copyBtnDone(copyBtn, text)
-      openImgView(imgsrc, imgTitle)
+      openImgView(imgsrc, imgTitle, imgAlt)
   */
 function scrollToTop() {
   window.location.hash = "";
@@ -211,53 +219,9 @@ function refreshAppbar() {
 setUItitle(title.innerHTML);
 console.output("设置UI标题\nUItitle.innerHTML="+title.innerHTML);
 
-//章节锚点额外处理（<a href="#xxx"></a>）
-/* 因为这里有个bug，浏览器处理#时会把正文内容置到整个窗口，导致其它元素被隐藏
-   所以需要利用absolute布局特性刷新appbar位置 */
-addEventListener("hashchange", (event) => {
-  if (window.location.hash == "") {console.output("Hash清空\nwindow.location.hash="+window.location.hash);return;};
-  appbar.setAttribute("style","width:100vw;position:absolute;");
-  setTimeout(()=>{appbar.setAttribute("style","width:100vw;position:relative;");refreshAppbar();}, 100);
-  console.output("Hash改变，重绘UI\nwindow.location.hash="+window.location.hash);
-});
-/* 另外要处理页面首次加载完成后章节锚点不会被处理的问题 */
-document.ready=function(callback){if(document.addEventListener){document.addEventListener('DOMContentLoaded',function(){document.removeEventListener('DOMContentLoaded',arguments.callee,false);callback()},false)}else if(document.attachEvent){document.attachEvent('onreadystatechange',function(){if(document.readyState=="complete"){document.detachEvent("onreadystatechange",arguments.callee);callback()}})}else if(document.lastChild==document.body){callback()}}
-document.ready (function() {
-  /* 修复章节锚点跳转 */
-  if (window.location.hash != "") {
-    openURL(window.location.hash, "");
-    console.log("找到章节锚点 "+window.location.hash);
-    appbar.setAttribute("style","width:100vw;position:absolute;");
-    setTimeout(()=>{appbar.setAttribute("style","width:100vw;position:relative;");}, 100);
-    addEventListener("load",()=>{appbar.setAttribute("style","width:100vw;position:absolute;");setTimeout(()=>{appbar.setAttribute("style","width:100vw;position:relative;");refreshAppbar();}, 10);});
-    console.output("检测到页面载入Hash\nwindow.location.hash="+window.location.hash);
-  };
-  /* 修复#:~:text=导致的布局异常
-     不完美的修复方法，但是不能接管#:~:text=的处理就只能这样了 */
-  setTimeout(()=>{
-    if (contentScroll.scrollTop != 0) {
-      appbar.setAttribute("style","width:100vw;position:absolute;");
-      refreshAppbar();
-      if (contentScroll.scrollTop >= contentScroll.offsetHeight) {
-        if (toTopBtn.className != "fadeIn") {
-          toTopBtn.setAttribute("onclick","scrollToTop();");
-          toTopBtn.setAttribute("class","fadeIn");
-          toTopBtn.style="";
-        };
-        document.getElementById("sidebar_left_parent").setAttribute("style", "display:none;");
-        document.getElementById("sidebar_left").setAttribute("style", "display:none;");
-        setTimeout(()=>{
-          appbar.setAttribute("style","width:100vw;position:relative;");
-          document.getElementById("sidebar").show();
-          document.getElementById("sidebar").dismiss();
-          document.getElementById("sidebar_left_parent").setAttribute("style", "");
-          document.getElementById("sidebar_left").setAttribute("style", "");
-        }, 100);
-      };
-    console.output("检测到页面异常滚动，已重绘UI");
-    };
-  }, 100);
-}); 
+//章节锚点额外处理，即动态重算s-drawer的高度
+document.getElementById("sidebar").style.height = `${document.body.scrollHeight-appbar.offsetHeight}px`;
+window.addEventListener('resize', () => {/*当窗口大小改变时也要重算高度*/document.getElementById("sidebar").style.height = `${document.body.scrollHeight-appbar.offsetHeight}px`;});
 
 //检查页面设置元素并应用
 if (!!document.getElementById("mdRender_config")) {
@@ -279,7 +243,7 @@ if (!!document.getElementById("mdRender_config")) {
 
 //建站时长刷新
 function RefreshCountup(StartY,StartM,StartD) {let now = Date.now();end = new Date(StartY,StartM-1,StartD);ends = end.getTime();let ss = ends - now;let s = Math.floor(ss/1000);let day= -1*Math.floor(s / 60 / 60 / 24);let hours = -1*Math.floor(s / 60 / 60 % 24);let min = -1*Math.floor(s / 60 % 60 );let sec = -1*Math.floor(s % 60 );timeElement.innerHTML = "<center><small>本站已建立"+day+"天"+hours+"时"+min+"分"+sec+"秒</small></center>";};
-if (conf_time[0]) {var Timing_intervalID = setInterval(() => {RefreshCountup(conf_time[1],conf_time[2],conf_time[3])}, 1000);console.output("启用建站时长计时 loop#"+Timing_intervalID+`\nSince ${conf_time[1]}-${conf_time[2]}-${conf_time[3]}`);};
+if (conf_time[0]) {var Timing_intervalID = setInterval(() => {RefreshCountup(conf_time[1],conf_time[2],conf_time[3])}, 1000);console.output("启用建站时长计时 loop#"+Timing_intervalID+`\nSince ${conf_time[1]}-${conf_time[2]}-${conf_time[3]}`);} else {timeElement.remove();};
 console.log('%cPages Markdown Re-Render v'+PluginVer[0]+'%c['+PluginVer[1]+'%c]\nCopyright (C) 2024 kdxiaoyi. All right reserved.','color:#90BBB1;','color:#90BBB1;','color:#90BBB1;');
 
 //code元素新增复制到剪贴板按钮
@@ -307,9 +271,9 @@ function copyBtnDone(copyBtn, text) {
     console.output("CodeCopyBtn状态改变至「未激活」");
   },5000);
 };
+if (conf_codeCopyBtn) {
 document.querySelectorAll('code').forEach((codeElement) => {
   if (codeElement.querySelectorAll('span').length == 0) /*不是代码块就跳过*/ {return;};
-  if (!conf_codeCopyBtn) {return;};
   console.output("为Code添加CodeCopyBtn");
   codeElement.classList.add("processed");
   let copyCodeBtn = document.createElement('s-chip');
@@ -333,7 +297,26 @@ document.querySelectorAll('code').forEach((codeElement) => {
     );
   });
   codeElement.parentNode.insertBefore(copyCodeBtn, codeElement.nextSibling);
-});
+});};
+
+//向复制内容末尾添加版权声明
+if (!!conf_copy_endnote) {
+  endnote=conf_copy_endnote
+    .replace(/%LINK%/,window.location)
+    .replace(/%TITLE%/,UIt.innerHTML)
+    .replace(/%ETITLE%/,title.innerHTML);
+  console.log("覆写复制操作处理\nendnote="+endnote);
+document.addEventListener('copy', async (event) => {
+  event.preventDefault();
+  try {
+    console.log("向复制文本末尾追加endnote\nOriginText="+window.getSelection().toString());
+    await navigator.clipboard.writeText(window.getSelection().toString() + endnote);
+    msg("已复制文本，请注意授权协议。","好");
+  } catch (err) {
+    console.log('无法复制文本: '+ err)
+    msg("复制失败，无法访问剪贴板。","好",true);
+  }
+});};
 
 //图片信息页功能
 document.getElementById("img_dialog_btn").addEventListener("click",()=>{
@@ -351,26 +334,46 @@ document.getElementById("img_dialog_open_btn").addEventListener("click",()=>{
 });
 if (!conf_imgView_open) {document.getElementById("img_dialog_open_btn").remove();};
 document.querySelectorAll('img').forEach((imgElement) => {
+  imgElement.addEventListener("load",()=>{
+    if (imgElement.dataset.status=="error") {return;};
+    contentBG.style.height="initial";
+    contentBG.style.height=`${contentBG.offsetHeight+appbar.offsetHeight}px`;
+    console.output("修改页面真实高度\ncontentBG.style.height="+contentBG.style.height);
+  });
+  imgElement.addEventListener("error",()=>{
+    if (imgElement.dataset.status=="error") {
+      msg("坏链占位符图片加载错误，请联系站长处理","好",true);
+      console.warn("错误：无法加载图片加载错误占位符图片。\n conf_img_error_replace="+conf_img_error_replace);
+      return;
+    };
+    imgElement.dataset.status="error";
+    imgElement.src=conf_img_error_replace;
+    console.output("某个图片加载失败\nsrc="+imgElement.src);
+  });
   /*添加文档流图片点击后放大事件*/
   if (!conf_imgView) {return;};
   if (imgElement.dataset.uiImg=="true") {return;};
   imgElement.classList.add("processed");
-  if (conf_imgView_imgse) {imgElement.addEventListener("click",()=>{openImgView(imgElement.src.replace(/\.md\./,"."),imgElement.title);});} else {imgElement.addEventListener("click",()=>{openImgView(imgElement.src,imgElement.title);});};
+  if (conf_imgView_imgse) {imgElement.addEventListener("click",()=>{openImgView(imgElement.src.replace(/\.md\./,"."),imgElement.title,imgElement.alt);});} else {imgElement.addEventListener("click",()=>{openImgView(imgElement.src,imgElement.title);});};
   console.output("向img添加了imgView绑定");
 });
-function openImgView(imgsrc, imgTitle) {
+function openImgView(imgsrc, imgTitle, imgAlt) {
   /*以指定uri打开imgView*/
   img_dialog_img.src=imgsrc;
   let imgFileName=imgsrc.split("/").pop().split("\\").pop();
-  img_dialog_p.innerHTML=`<b><big>${imgFileName}</big></b>`
+  if (!imgTitle) {
+    img_dialog_p.innerHTML=`<b><big class="selectable">${imgFileName}</big></b><br>`;
+  } else {
+    img_dialog_p.innerHTML=`<b><big class="selectable">${imgTitle}</big></b><br><small>${imgFileName} | </small>`;
+  }
   let imgInfo="";
   img_dialog_img.onload=function() {
     imgInfo=img_dialog_img.naturalHeight+`×`+img_dialog_img.naturalWidth;
-    img_dialog_p.innerHTML=`<b><big>${imgFileName}</big></b><br><sup>${imgInfo} | 此图片以<a href="${conf_licen_link}" target="_blank">${conf_licen}</a>协议提供</sup><br>${imgTitle}`;
+    img_dialog_p.innerHTML+=`<small>${imgInfo} | 以<a href="${conf_licen_link}">${conf_licen}</a>协议提供</small><br><p class="selectable">${imgAlt}</p>`;
     console.output("imgView被打开\nimgsrc="+imgsrc+"\nimgFileName="+imgFileName+"\nimgTitle="+imgTitle+"\nimgInfo="+imgInfo);
   };
   img_dialog_img.onerror=function() {
-    img_dialog_p.innerHTML=`<b><big>${imgFileName}</big></b><br><sup>无法获取图片信息</sup><br>${imgTitle}`;
+    img_dialog_p.innerHTML+=`<small>无法获取图片信息 | 以<a href="${conf_licen_link}">${conf_licen}</a>协议提供</small><br><p class="selectable">${imgAlt}</p>`;
     console.output("imgView被打开\nimgsrc="+imgsrc+"\nimgFileName="+imgFileName+"\nimgTitle="+imgTitle+"\nimgInfo= [[获取失败]]");
   };
   img_dialog.show();
