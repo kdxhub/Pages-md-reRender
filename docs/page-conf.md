@@ -33,4 +33,15 @@ data-sideship-hide="0"
 ### `title`
 只要存在此配置，强制将Appbar的标题设置为其值，而不从页面中读取。
 
+### `old_menu`*
+Pages-md-reRender会自动移除id为`old_menu`的控件。<br>
+这有助于您创建一个备用的导航菜单，例如：
+```html
+<small id="old_menu"><a href="/">首页</a> | <a href="/blogs">Blogs</a> | <a href="/Project">项目合集</a><br></small><small><a href="../../">←返回</a> | 创建：2024-06-05 | 最后更新：2024-06-05</small><br>
+```
+这会创建一个菜单，但在页面重渲染结束后会被移除。
+
+### `ui-img`*
+带有此配置的`img`元素不能被点击查看大图。
+
 <script src="https://unpkg.com/sober@0.4.2/dist/sober.min.js"></script><script src="https://kdxiaoyi.top/Pages-md-reRender/res/pmdrr.js"></script>

@@ -4,6 +4,8 @@
 const /*文章授权协议*/conf_licen=`CC BY-NC 4.0`;
 const /*文章授权协议链接*/conf_licen_link=`https://creativecommons.org/licenses/by-nc/4.0/legalcode.zh-hans`;
 const /*在代码块下方添加复制代码按钮*/conf_codeCopyBtn=true;
+const   /*代码块复制按钮默认文本*/conf_codeCopyBtn_tip="Copy";
+const   /*代码块复制按钮点击后文本*/conf_codeCopyBtn_tip_done="Copied!";
 const /*允许点击图片来查看大图*/conf_imgView=true;
 const   /*启用查看大图对imgse图床的自动去除.md.缩略图后缀*/conf_imgView_imgse=true;
 const   /*启用查看大图查看原图 跳转至imgse查看页而不是源文件*/conf_imgView_imgse_noRes=true;
@@ -32,9 +34,12 @@ const /*复制文本后向文本末尾添加来源出处，为空时禁用
       可以使用${}来引用页面中已有的配置项，例如${conf_licen}可以指代授权协议*/
       conf_copy_endnote=` ‖ 来自[%ETITLE%](%LINK%)，以${conf_licen}协议授权。`;
 const /*图片加载失败后的占位符图片*/conf_img_error_replace="https://rs.kdxiaoyi.top/res/images/load_err.svg";
+const /*为所有在新标签页打开的链接添加右上箭头*/conf_link_arrow=true;
+const   /*仅对含有 ↗ 或 $ 的链接生效*/conf_link_arrow_replace=true;
+const   /*外链图标*/conf_link_arrow_icon=`<s-icon class="newWindowOpen"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960"><path d="M200-120q-33 0-56.5-23.5T120-200v-560q0-33 23.5-56.5T200-840h280v80H200v560h560v-280h80v280q0 33-23.5 56.5T760-120H200Zm188-212-56-56 372-372H560v-80h280v280h-80v-144L388-332Z"></path></svg></s-icon>`;
 
 //下方常量不建议修改
-const /*插件版本（建议不要修改）*/PluginVer=["1.1.0",14];
+const /*插件版本（建议不要修改）*/PluginVer=["1.1.1",15];
 
 //插入重渲染代码
 document.body.innerHTML = `
@@ -93,6 +98,7 @@ document.body.innerHTML = `
     }
     code.processed {}
     .selectable {user-select:text;}
+    s-icon.newWindowOpen {height:1em;width:1em;}
   </style>
   <s-page theme="auto" class="page_root" id="page_root">
     <s-dialog style="display:none;" id="img_dialog" size="full">
@@ -100,7 +106,7 @@ document.body.innerHTML = `
         <p id="img_dialog_p"></p>
         <img data-ui-img="true" id="img_dialog_img" src=""></img>
       </div>
-      <s-button id="img_dialog_open_btn" slot="action" type="text">查看原图 <s-icon><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960"><path d="M200-120q-33 0-56.5-23.5T120-200v-560q0-33 23.5-56.5T200-840h280v80H200v560h560v-280h80v280q0 33-23.5 56.5T760-120H200Zm188-212-56-56 372-372H560v-80h280v280h-80v-144L388-332Z"></path></svg></s-icon></s-button>
+      <s-button id="img_dialog_open_btn" slot="action" type="text">查看原图 <s-icon class="newWindowOpen"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960"><path d="M200-120q-33 0-56.5-23.5T120-200v-560q0-33 23.5-56.5T200-840h280v80H200v560h560v-280h80v280q0 33-23.5 56.5T760-120H200Zm188-212-56-56 372-372H560v-80h280v280h-80v-144L388-332Z"></path></svg></s-icon></s-button>
       <s-button id="img_dialog_btn" slot="action" type="text">关闭</s-button>
     </s-dialog>
     <s-appbar id="appbar">
@@ -246,6 +252,23 @@ function RefreshCountup(StartY,StartM,StartD) {let now = Date.now();end = new Da
 if (conf_time[0]) {var Timing_intervalID = setInterval(() => {RefreshCountup(conf_time[1],conf_time[2],conf_time[3])}, 1000);console.output("启用建站时长计时 loop#"+Timing_intervalID+`\nSince ${conf_time[1]}-${conf_time[2]}-${conf_time[3]}`);} else {timeElement.remove();};
 console.log('%cPages Markdown Re-Render v'+PluginVer[0]+'%c['+PluginVer[1]+'%c]\nCopyright (C) 2024 kdxiaoyi. All right reserved.','color:#90BBB1;','color:#90BBB1;','color:#90BBB1;');
 
+//a元素新增右上箭头
+if (conf_link_arrow) {
+document.querySelectorAll('a').forEach((aElement) => {
+  if (conf_link_arrow_replace) {
+    aElement.innerHTML=aElement.innerHTML.replace(/[\u2197\u0024(\ud83d\ude97)]/, conf_link_arrow_icon);
+    console.log("为a添加了外链图标 (替换模式)");
+    return;
+  };
+  if (
+    /*排除指向章节锚点的链接*/ /$#/.test(aElement.src)
+    ||/*排除不在新窗口打开的链接*/ aElement.targe!="_blank"
+  ) {return;};
+  aElement.innerHTML+=conf_link_arrow_icon;
+  console.log("为a添加了外链图标");
+});
+};
+
 //code元素新增复制到剪贴板按钮
 function selectAllTextInElement(element) {
   let range = document.createRange();
@@ -255,15 +278,14 @@ function selectAllTextInElement(element) {
   selection.addRange(range);
 };
 function copyBtnDone(copyBtn, text) {
+  /*copyBtn点击后动画*/
   console.output("CodeCopyBtn状态改变至「触发」");
   copyBtn.setAttribute("type","filled-tonal");
   let originalInnerHtml=copyBtn.innerHTML;
-  copyBtn.innerHTML=`<s-icon type="done" slot="start"></s-icon>
-  Copied!`;
+  copyBtn.innerHTML=`<s-icon type="done" slot="start"></s-icon>${conf_codeCopyBtn_tip_done}`;
   setTimeout(()=>{
     copyBtn.setAttribute("type","elevated");
-    copyBtn.innerHTML=`<s-icon slot="start"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960"><path d="M360-240q-33 0-56.5-23.5T280-320v-480q0-33 23.5-56.5T360-880h360q33 0 56.5 23.5T800-800v480q0 33-23.5 56.5T720-240H360Zm0-80h360v-480H360v480ZM200-80q-33 0-56.5-23.5T120-160v-560h80v560h440v80H200Zm160-240v-480 480Z"></path></svg></s-icon>
-    Copy`;
+    copyBtn.innerHTML=`<s-icon slot="start"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960"><path d="M360-240q-33 0-56.5-23.5T280-320v-480q0-33 23.5-56.5T360-880h360q33 0 56.5 23.5T800-800v480q0 33-23.5 56.5T720-240H360Zm0-80h360v-480H360v480ZM200-80q-33 0-56.5-23.5T120-160v-560h80v560h440v80H200Zm160-240v-480 480Z"></path></svg></s-icon>${conf_codeCopyBtn_tip}`;
     if (text==window.getSelection().toString()) {
       console.output("CodeCopyBtn状态改变时用户选中文本未改变，已清空");
       window.getSelection().removeAllRanges();
@@ -271,9 +293,13 @@ function copyBtnDone(copyBtn, text) {
     console.output("CodeCopyBtn状态改变至「未激活」");
   },5000);
 };
-if (conf_codeCopyBtn) {
+if (conf_codeCopyBtn) { /*添加Copy按钮并添加绑定*/
 document.querySelectorAll('code').forEach((codeElement) => {
-  if (codeElement.querySelectorAll('span').length == 0) /*不是代码块就跳过*/ {return;};
+  if (/*不是代码块就跳过*/
+    (codeElement./*检查语法高亮是否存在*/querySelectorAll('span').length == 0)
+    && !(codeElement.parentNode && codeElement.parentNode.nodeName === 'PRE')
+  ) {return;};
+  codeElement.parentNode.parentNode.parentNode.style.margin="5px 0 5px 0";
   console.output("为Code添加CodeCopyBtn");
   codeElement.classList.add("processed");
   let copyCodeBtn = document.createElement('s-chip');
@@ -281,8 +307,7 @@ document.querySelectorAll('code').forEach((codeElement) => {
   copyCodeBtn.setAttribute("class","font-default");
   copyCodeBtn.setAttribute("clickable","true");
   if (!navigator.clipboard) {copyCodeBtn.setAttribute("clickable","false");console.output("Clipboard API：不存在此方法");};
-  copyCodeBtn.innerHTML=`<s-icon slot="start"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960"><path d="M360-240q-33 0-56.5-23.5T280-320v-480q0-33 23.5-56.5T360-880h360q33 0 56.5 23.5T800-800v480q0 33-23.5 56.5T720-240H360Zm0-80h360v-480H360v480ZM200-80q-33 0-56.5-23.5T120-160v-560h80v560h440v80H200Zm160-240v-480 480Z"></path></svg></s-icon>
-  Copy`;
+  copyCodeBtn.innerHTML=`<s-icon slot="start"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960"><path d="M360-240q-33 0-56.5-23.5T280-320v-480q0-33 23.5-56.5T360-880h360q33 0 56.5 23.5T800-800v480q0 33-23.5 56.5T720-240H360Zm0-80h360v-480H360v480ZM200-80q-33 0-56.5-23.5T120-160v-560h80v560h440v80H200Zm160-240v-480 480Z"></path></svg></s-icon>${conf_codeCopyBtn_tip}`;
   copyCodeBtn.addEventListener('click',() => {
     window.getSelection().removeAllRanges();
     selectAllTextInElement(copyCodeBtn.parentElement.querySelectorAll("code")[0]);
@@ -302,6 +327,7 @@ document.querySelectorAll('code').forEach((codeElement) => {
 //向复制内容末尾添加版权声明
 if (!!conf_copy_endnote) {
   endnote=conf_copy_endnote
+    /*占位符替换*/
     .replace(/%LINK%/,window.location)
     .replace(/%TITLE%/,UIt.innerHTML)
     .replace(/%ETITLE%/,title.innerHTML);
@@ -383,3 +409,6 @@ function openImgView(imgsrc, imgTitle, imgAlt) {
 //修改Scroll-View到真实高度
 contentBG.style.height=`${contentBG.offsetHeight+appbar.offsetHeight}px`;
 console.output("修改页面真实高度\ncontentBG.style.height="+contentBG.style.height);
+
+//移除old_menu
+if (!!document.getElementById("old_menu")) {document.getElementById("old_menu").remove();};
