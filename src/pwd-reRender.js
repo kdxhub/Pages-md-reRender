@@ -37,9 +37,10 @@ const /*图片加载失败后的占位符图片*/conf_img_error_replace="https:/
 const /*为所有在新标签页打开的链接添加右上箭头*/conf_link_arrow=true;
 const   /*仅对含有 ↗ 或 $ 的链接生效*/conf_link_arrow_replace=true;
 const   /*外链图标*/conf_link_arrow_icon=`<s-icon class="newWindowOpen"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960"><path d="M200-120q-33 0-56.5-23.5T120-200v-560q0-33 23.5-56.5T200-840h280v80H200v560h560v-280h80v280q0 33-23.5 56.5T760-120H200Zm188-212-56-56 372-372H560v-80h280v280h-80v-144L388-332Z"></path></svg></s-icon>`;
+const /*自定义边栏内容，禁用保持留空*/conf_replaceSidebar=``;
 
 //下方常量不建议修改
-const /*插件版本（建议不要修改）*/PluginVer=["1.1.1",15];
+const /*插件版本（建议不要修改）*/PluginVer=["1.2.0beta",16];
 
 //插入重渲染代码
 document.body.innerHTML = `
@@ -111,7 +112,7 @@ document.body.innerHTML = `
     </s-dialog>
     <s-appbar id="appbar">
      <!--左侧菜单按钮-->
-      <s-icon-button type="filled-tonal" slot="navigation" onclick='document.getElementById("sidebar").toggle();console.output("切换Sidebar显示");'>
+      <s-icon-button id="sidebar_toggle_btn" type="filled-tonal" slot="navigation">
         <s-icon type="menu"></s-icon>
       </s-icon-button>
      <!--标题-->
@@ -158,6 +159,9 @@ var toTop_intervalID = -1;//回顶操作初始化
 const img_dialog=document.getElementById("img_dialog");
 const img_dialog_img=document.getElementById("img_dialog_img");
 const img_dialog_p=document.getElementById("img_dialog_p");
+const sidebar=document.getElementById("sidebar");
+console.log('%cPages Markdown Re-Render v'+PluginVer[0]+'%c['+PluginVer[1]+'%c]\nCopyright (C) 2024 kdxiaoyi. All right reserved.','color:#90BBB1;','color:#90BBB1;','color:#90BBB1;');
+
 //debug模式的检测与切换
 function getQueryString(name) { let reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)", "i"); let r = window.location.search.substr(1).match(reg); if (r != null) { return unescape(r[2]); }; return null; };
 function msg(Message, ConfirmText, isWarning) {let infoJson={};infoJson.root=document.querySelector('s-page');infoJson.text=Message;if (ConfirmText==undefined) {infoJson.action="";} else {infoJson.action=ConfirmText;};if (isWarning!=undefined) {infoJson.type="error";};customElements.get('s-snackbar').show(infoJson);console.output("创建了新的Snakbar\n"+JSON.stringify(infoJson));return infoJson;};
@@ -221,13 +225,24 @@ function refreshAppbar() {
   };
 };
 
+//切换侧栏按钮点击
+document.getElementById("sidebar_toggle_btn").addEventListener("click",()=>{
+  window.getSelection().removeAllRanges();
+  sidebar.toggle();
+  console.output("切换Sidebar显示");
+});
+
 //读取页面标题
 setUItitle(title.innerHTML);
 console.output("设置UI标题\nUItitle.innerHTML="+title.innerHTML);
 
 //章节锚点额外处理，即动态重算s-drawer的高度
-document.getElementById("sidebar").style.height = `${document.body.scrollHeight-appbar.offsetHeight}px`;
-window.addEventListener('resize', () => {/*当窗口大小改变时也要重算高度*/document.getElementById("sidebar").style.height = `${document.body.scrollHeight-appbar.offsetHeight}px`;});
+sidebar.style.height = `${document.body.scrollHeight-appbar.offsetHeight}px`;
+console.output("重算s-drawer高度\nsidebar.style.height="+sidebar.offsetHeight+"px");
+window.addEventListener('resize',() => {/*当窗口大小改变时也要重算高度*/
+  sidebar.style.height = `${document.body.scrollHeight-appbar.offsetHeight}px`;
+  console.output("重算s-drawer高度\nsidebar.style.height="+sidebar.offsetHeight+"px");
+});
 
 //检查页面设置元素并应用
 if (!!document.getElementById("mdRender_config")) {
@@ -249,8 +264,7 @@ if (!!document.getElementById("mdRender_config")) {
 
 //建站时长刷新
 function RefreshCountup(StartY,StartM,StartD) {let now = Date.now();end = new Date(StartY,StartM-1,StartD);ends = end.getTime();let ss = ends - now;let s = Math.floor(ss/1000);let day= -1*Math.floor(s / 60 / 60 / 24);let hours = -1*Math.floor(s / 60 / 60 % 24);let min = -1*Math.floor(s / 60 % 60 );let sec = -1*Math.floor(s % 60 );timeElement.innerHTML = "<center><small>本站已建立"+day+"天"+hours+"时"+min+"分"+sec+"秒</small></center>";};
-if (conf_time[0]) {var Timing_intervalID = setInterval(() => {RefreshCountup(conf_time[1],conf_time[2],conf_time[3])}, 1000);console.output("启用建站时长计时 loop#"+Timing_intervalID+`\nSince ${conf_time[1]}-${conf_time[2]}-${conf_time[3]}`);} else {timeElement.remove();};
-console.log('%cPages Markdown Re-Render v'+PluginVer[0]+'%c['+PluginVer[1]+'%c]\nCopyright (C) 2024 kdxiaoyi. All right reserved.','color:#90BBB1;','color:#90BBB1;','color:#90BBB1;');
+if (conf_time[0] && !conf_replaceSidebar) {var Timing_intervalID = setInterval(() => {RefreshCountup(conf_time[1],conf_time[2],conf_time[3])}, 1000);console.output("启用建站时长计时 loop#"+Timing_intervalID+`\nSince ${conf_time[1]}-${conf_time[2]}-${conf_time[3]}`);} else {timeElement.remove();};
 
 //a元素新增右上箭头
 if (conf_link_arrow) {

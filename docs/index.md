@@ -3,18 +3,29 @@ title: "Pages-md-reRender"
 description: "一款极其轻量且低侵入的Github Pages主题"
 ---
 # 开始使用
-开始使用Pages-md-reRender十分简单，只需将`pmd-reRender.min.js`引用到您的Markdown文件末尾：<br>
-* 将该文存放到您站点的Script目录内
-  * 你可以在
+开始使用Pages-md-reRender十分简单，您仅需完成若干步骤。<br>
+* 将脚本文件存放到您站点的Script目录内。
+  * 你可以在[Gitee.](https://gitee.com/kdxiaoyi/Pages-md-reRender/blob/master/src/pmd-reRender.min.js)或[Github](https://github.com/kdxhub/Pages-md-reRender/blob/master/src/pmd-reRender.min.js)找到这个文件
 * 之后，在您的Markdown文件**末尾**插入以下代码：
 ```html
 <script src="https://unpkg.com/sober@0.4.2/dist/sober.min.js"></script>
 <script src="您站点上的pwd-reRender.min.js文件"></script>
 ```
-* 将更改后的文件上传到Github Pages仓库上
-* 打开站点，大工告成！
+* 接着，将CSS文件存放到您站点的Style目录下。
+  * `background.css`可以在[Gitee](https://gitee.com/kdxiaoyi/Pages-md-reRender/blob/master/src/background.css)或[Github](https://github.com/kdxhub/Pages-md-reRender/blob/master/src/background.css)上找到。
+  * `SoberJS`所使用的CSS可以使用[官方工具](https://soberjs.com/style/theme-builder)在线生成，或者使用[现成的CSS文件](https://gitee.com/kdxiaoyi/Pages-md-reRender/blob/master/src/sober-theme-turquoise.css)
+* 根据[Github Doc](https://docs.github.com/zh/pages/setting-up-a-github-pages-site-with-jekyll/adding-a-theme-to-your-github-pages-site-using-jekyll#customizing-your-themes-css)，您需要在Pages根目录下创建`/assets/css/style.scss`文件并加入以下内容：
+```scss
+---
+---
 
-> 目前适配SoberJS `0.4.2`版本。
+@import "{{ site.theme }}";
+@import "SoberJS css路径";
+@import "background.css文件路径";
+```
+> 绝大部分的Pages-md-reRender所需的css都是定义在代码内的，因此你也可以尝试不引入`background.css`。
+
+> 目前适配SoberJS `0.4.2`版本。使用不期的版本可能导致未知问题。
 
 # 在此之后…
 也许你注意到了，站点上一些数据均为默认值，想要自定义。<br>

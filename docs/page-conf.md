@@ -2,7 +2,8 @@
 title: "页面特殊设置项"
 description: ""
 ---
-##概述
+
+## 概述
 页面特殊设置项存于id为`mdRender_config`的`div`元素内。<br>
 在md文件内任意一处地方插入以下代码（建议文末）以开启特殊设置。
 ```html
