@@ -18,10 +18,13 @@ const /*左侧边栏·第2格内容*/conf_sidebar_links=`
 <s-chip id="side_ship_0" onclick="openURL('/','')" clickable="true" class="sidebar_btn">
 <s-icon slot="start" type="home"></s-icon>
 主页 Homepage</s-chip>
-<s-chip id="side_ship_1" onclick="openURL('http://github.com/kdxhub/Pages-md-reRender')" clickable="true" class="sidebar_btn">
+<s-chip id="side_ship_1" onclick="openURL('/update-log','')" clickable="true" class="sidebar_btn">
+<s-icon slot="start" type="home"></s-icon>
+更新日志 Update Log</s-chip>
+<s-chip id="side_ship_2" onclick="openURL('http://github.com/kdxhub/Pages-md-reRender')" clickable="true" class="sidebar_btn">
 <s-icon slot="start"></s-icon>
 Github ↗</s-chip>
-<s-chip id="side_ship_2" onclick="openURL('https://gitee.com/kdxiaoyi/Pages-md-reRender')" clickable="true" class="sidebar_btn">
+<s-chip id="side_ship_3" onclick="openURL('https://gitee.com/kdxiaoyi/Pages-md-reRender')" clickable="true" class="sidebar_btn">
 <s-icon slot="start"></s-icon>
 Gitee ↗</s-chip>`
 const /*左侧边栏·第2格内容中没有按文档编写请启用此项*/conf_sidebar_links_preventDefault=false;

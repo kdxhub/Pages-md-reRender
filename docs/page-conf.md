@@ -17,6 +17,7 @@ data-sideship-hide="0"
 ></div>
 ```
 这段代码表示自定义配置`sideship-hide`的值为`0`。<br>
+注明`*`号表示这个配置项不是写入`mdRender_config`内的。
 
 ## 自定义配置表
 ### `sideship-hide`
@@ -46,3 +47,13 @@ Pages-md-reRender会自动移除id为`old_menu`的控件。<br>
 带有此配置的`img`元素不能被点击查看大图。
 
 <script src="https://unpkg.com/sober@0.4.2/dist/sober.min.js"></script><script src="https://kdxiaoyi.top/Pages-md-reRender/res/pmdrr.js"></script>
+
+### `indexDiv`*
+控件id为`indexDiv`的div元素内容会被替换为目录索引。<br>
+例如下面这段代码在实际落地页会显示当前文档的目录索引。
+
+```html
+<div id="indexDiv"></div>
+```
+
+> 需要启用[`conf_index`全局配置项](./global-conf#conf_index)。

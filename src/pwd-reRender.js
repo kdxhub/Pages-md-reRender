@@ -7,7 +7,7 @@ const /*在代码块下方添加复制代码按钮*/conf_codeCopyBtn=true;
 const   /*代码块复制按钮默认文本*/conf_codeCopyBtn_tip="Copy";
 const   /*代码块复制按钮点击后文本*/conf_codeCopyBtn_tip_done="Copied!";
 const /*允许点击图片来查看大图*/conf_imgView=true;
-const   /*启用查看大图对imgse图床的自动去除.md.缩略图后缀*/conf_imgView_imgse=true;
+const   /*启用查看大图对imgse图床的优化*/conf_imgView_imgse=true;
 const   /*启用查看大图查看原图 跳转至imgse查看页而不是源文件*/conf_imgView_imgse_noRes=true;
 const   /*启用查看大图查看原图按钮*/conf_imgView_open=true;
 const /*启用建站时长计时 [是否启用t/f,年,月,日]*/conf_time=[false,2022,7,20];
@@ -28,18 +28,16 @@ const /*左侧边栏·第2格内容*/conf_sidebar_links=`
 <s-icon slot="start"><svg width="100px" height="100px" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><g><path fill="none" d="M0 0h24v24H0z"/><path d="M18.223 3.086a1.25 1.25 0 0 1 0 1.768L17.08 5.996h1.17A3.75 3.75 0 0 1 22 9.747v7.5a3.75 3.75 0 0 1-3.75 3.75H5.75A3.75 3.75 0 0 1 2 17.247v-7.5a3.75 3.75 0 0 1 3.75-3.75h1.166L5.775 4.855a1.25 1.25 0 1 1 1.767-1.768l2.652 2.652c.079.079.145.165.198.257h3.213c.053-.092.12-.18.199-.258l2.651-2.652a1.25 1.25 0 0 1 1.768 0zm.027 5.42H5.75a1.25 1.25 0 0 0-1.247 1.157l-.003.094v7.5c0 .659.51 1.199 1.157 1.246l.093.004h12.5a1.25 1.25 0 0 0 1.247-1.157l.003-.093v-7.5c0-.69-.56-1.25-1.25-1.25zm-10 2.5c.69 0 1.25.56 1.25 1.25v1.25a1.25 1.25 0 1 1-2.5 0v-1.25c0-.69.56-1.25 1.25-1.25zm7.5 0c.69 0 1.25.56 1.25 1.25v1.25a1.25 1.25 0 1 1-2.5 0v-1.25c0-.69.56-1.25 1.25-1.25z"/></g></svg></s-icon>
 Bilibili ↗</s-chip>`;
 const /*左侧边栏·第2格内容中没有按文档编写请启用此项*/conf_sidebar_links_preventDefault=false;
-const /*复制文本后向文本末尾添加来源出处，为空时禁用
-      %LINK% 指代页面链接
-      %TITLE% 指代标题  %ETITLE% 指代文章标题  区别在于前者是标题栏的标题，后者是检测到的文章标题
-      可以使用${}来引用页面中已有的配置项，例如${conf_licen}可以指代授权协议*/
-      conf_copy_endnote=` ‖ 来自[%ETITLE%](%LINK%)，以${conf_licen}协议授权。`;
+const /*复制文本后向文本末尾添加一段文本，详见文档*/conf_copy_endnote=` ‖ 来自[%ETITLE%](%LINK%)，以${conf_licen}协议授权。`;
 const /*图片加载失败后的占位符图片*/conf_img_error_replace="https://rs.kdxiaoyi.top/res/images/load_err.svg";
 const /*为所有在新标签页打开的链接添加右上箭头*/conf_link_arrow=true;
 const   /*仅对含有 ↗ 或 $ 的链接生效*/conf_link_arrow_replace=true;
+const   /*如果链接含有 ฿ 则将其修改为新标签页打开*/conf_link_target_replace=true;
 const   /*外链图标*/conf_link_arrow_icon=`<s-icon class="newWindowOpen"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960"><path d="M200-120q-33 0-56.5-23.5T120-200v-560q0-33 23.5-56.5T200-840h280v80H200v560h560v-280h80v280q0 33-23.5 56.5T760-120H200Zm188-212-56-56 372-372H560v-80h280v280h-80v-144L388-332Z"></path></svg></s-icon>`;
 const /*自定义边栏内容，禁用保持留空*/conf_replaceSidebar=``;
+const /*启用目录索引侧栏*/conf_index_sidebar=true;
+const /*启用目录统计，高级用法详见文档*/conf_index=true;
 
-//下方常量不建议修改
 const /*插件版本（建议不要修改）*/PluginVer=["1.2.0beta",16];
 
 //插入重渲染代码
@@ -122,19 +120,21 @@ document.body.innerHTML = `
     </s-appbar>
     <s-drawer id="sidebar">
       <div id="sidebar_left_parent" slot="start">
-        <div id="sidebar_left" style="padding:5px 5px 5px 5px;">
+        <s-scroll-view style="max-height:100%;">
+          <div id="sidebar_left" style="padding:5px 5px 5px 5px;">
           <!--左侧边栏内容-->
-          <s-card type="" class="sidebar_head">
-            <div slot="image"><img data-ui-img="true" src="${conf_sidebar_headimg_src}"></div>
-            <div slot="headline"><span class='sidebar_username_bg'>${conf_sidebar_headimg_alt}</span></div>
-          </s-card><br>
-          <s-card type="" class="sidebar_head">${conf_sidebar_links}</s-card><br>
-          <s-card type="" class="sidebar_head">
-            <div id="saying" class="selectable"><center>${conf_saying}</center></div>
-            <div id="time"><center><small>Since 2022-07-19</small></center></div>
-            <div id="license"><center><small>以<a href="${conf_licen_link}">${conf_licen}</a>协议提供内容</small></center></div>
-          </s-card>
-        </div>
+            <s-card type="" class="sidebar_head">
+              <div slot="image"><img data-ui-img="true" src="${conf_sidebar_headimg_src}"></div>
+              <div slot="headline"><span class='sidebar_username_bg'>${conf_sidebar_headimg_alt}</span></div>
+            </s-card><br>
+            <s-card type="" class="sidebar_head">${conf_sidebar_links}</s-card><br>
+            <s-card type="" class="sidebar_head">
+              <div id="saying" class="selectable"><center>${conf_saying}</center></div>
+              <div id="time"><center><small>Since 2022-07-19</small></center></div>
+              <div id="license"><center><small>以<a href="${conf_licen_link}">${conf_licen}</a>协议提供内容</small></center></div>
+            </s-card>
+          </div>
+        <s-scroll-view>
       </div>
       <div>
         <s-scroll-view id="contentScroll" style="max-height:100%;"><div id="contentBG" class="selectable">
@@ -225,6 +225,9 @@ function refreshAppbar() {
   };
 };
 
+//侧栏内容覆写
+if (!!conf_replaceSidebar) {document.getElementById("sidebar_left").innerHTML=conf_replaceSidebar;console.log("覆写sidebar内容");};
+
 //切换侧栏按钮点击
 document.getElementById("sidebar_toggle_btn").addEventListener("click",()=>{
   window.getSelection().removeAllRanges();
@@ -266,19 +269,20 @@ if (!!document.getElementById("mdRender_config")) {
 function RefreshCountup(StartY,StartM,StartD) {let now = Date.now();end = new Date(StartY,StartM-1,StartD);ends = end.getTime();let ss = ends - now;let s = Math.floor(ss/1000);let day= -1*Math.floor(s / 60 / 60 / 24);let hours = -1*Math.floor(s / 60 / 60 % 24);let min = -1*Math.floor(s / 60 % 60 );let sec = -1*Math.floor(s % 60 );timeElement.innerHTML = "<center><small>本站已建立"+day+"天"+hours+"时"+min+"分"+sec+"秒</small></center>";};
 if (conf_time[0] && !conf_replaceSidebar) {var Timing_intervalID = setInterval(() => {RefreshCountup(conf_time[1],conf_time[2],conf_time[3])}, 1000);console.output("启用建站时长计时 loop#"+Timing_intervalID+`\nSince ${conf_time[1]}-${conf_time[2]}-${conf_time[3]}`);} else {timeElement.remove();};
 
-//a元素新增右上箭头
+//a元素新增右上箭头，修改打开位置
 if (conf_link_arrow) {
 document.querySelectorAll('a').forEach((aElement) => {
+  if (conf_link_target_replace||/\u0e3f/.test(aElement.innerHTML)) {aElement.target="_blank";};
   if (conf_link_arrow_replace) {
-    aElement.innerHTML=aElement.innerHTML.replace(/[\u2197\u0024(\ud83d\ude97)]/, conf_link_arrow_icon);
+    aElement.innerHTML=aElement.innerHTML.replace(/[\u2197\u0024\u0e3f]/, conf_link_arrow_icon);
     console.log("为a添加了外链图标 (替换模式)");
     return;
   };
   if (
-    /*排除指向章节锚点的链接*/ /$#/.test(aElement.src)
-    ||/*排除不在新窗口打开的链接*/ aElement.targe!="_blank"
+    /*排除指向章节锚点的链接*/ /#/.test(aElement.src)
+    ||/*排除不在新窗口打开的链接*/ aElement.target!="_blank"
   ) {return;};
-  aElement.innerHTML+=conf_link_arrow_icon;
+  aElement.innerHTML=aElement.innerHTML.replace(/\u0e3f/,"")+conf_link_arrow_icon;
   console.log("为a添加了外链图标");
 });
 };

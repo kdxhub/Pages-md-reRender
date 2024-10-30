@@ -34,7 +34,5 @@ description: "一款极其轻量且低侵入的Github Pages主题"
 有关于这些设置项的用法，请参阅[全局设置项](./global-conf)。<br>
 对于部分设置，支持[页面特殊设置项](./page-conf)。
 
-<div id="mdRender_config"
-data-sideship-hide="0"
-></div>
+<div id="mdRender_config" data-sideship-hide="0"></div>
 <script src="https://unpkg.com/sober@0.4.2/dist/sober.min.js"></script><script src="https://kdxiaoyi.top/Pages-md-reRender/res/pmdrr.js"></script>
