@@ -15,6 +15,7 @@ description: "一款极其轻量且低侵入的Github Pages主题"
   * `background.css`可以在[Gitee](https://gitee.com/kdxiaoyi/Pages-md-reRender/blob/master/src/background.css)或[Github](https://github.com/kdxhub/Pages-md-reRender/blob/master/src/background.css)上找到。
   * `SoberJS`所使用的CSS可以使用[官方工具](https://soberjs.com/style/theme-builder)在线生成，或者使用[现成的CSS文件](https://gitee.com/kdxiaoyi/Pages-md-reRender/blob/master/src/sober-theme-turquoise.css)
 * 根据[Github Doc](https://docs.github.com/zh/pages/setting-up-a-github-pages-site-with-jekyll/adding-a-theme-to-your-github-pages-site-using-jekyll#customizing-your-themes-css)，您需要在Pages根目录下创建`/assets/css/style.scss`文件并加入以下内容：
+
 ```scss
 ---
 ---
@@ -23,6 +24,7 @@ description: "一款极其轻量且低侵入的Github Pages主题"
 @import "SoberJS css路径";
 @import "background.css文件路径";
 ```
+
 > 绝大部分的Pages-md-reRender所需的css都是定义在代码内的，因此你也可以尝试不引入`background.css`。
 
 > 目前适配SoberJS `0.4.2`版本。使用不期的版本可能导致未知问题。

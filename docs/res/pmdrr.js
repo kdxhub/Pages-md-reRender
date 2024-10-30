@@ -15,10 +15,10 @@ const /*左侧边栏·一言*/conf_saying="一款极其轻量且低侵入的Gith
 const /*左侧边栏·第1格·背景图片*/conf_sidebar_headimg_src=`https://kdxiaoyi.top/favicon.ico`;
 const   /*左侧边栏·第1格·背景图片描述*/conf_sidebar_headimg_alt="Pages-md-reRender";
 const /*左侧边栏·第2格内容*/conf_sidebar_links=`
-<s-chip id="side_ship_0" onclick="openURL('/','')" clickable="true" class="sidebar_btn">
+<s-chip id="side_ship_0" onclick="openURL('./','')" clickable="true" class="sidebar_btn">
 <s-icon slot="start" type="home"></s-icon>
 主页 Homepage</s-chip>
-<s-chip id="side_ship_1" onclick="openURL('/update-log','')" clickable="true" class="sidebar_btn">
+<s-chip id="side_ship_1" onclick="openURL('./update-log','')" clickable="true" class="sidebar_btn">
 <s-icon slot="start" type="home"></s-icon>
 更新日志 Update Log</s-chip>
 <s-chip id="side_ship_2" onclick="openURL('http://github.com/kdxhub/Pages-md-reRender')" clickable="true" class="sidebar_btn">
