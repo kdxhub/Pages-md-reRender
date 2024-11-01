@@ -1,6 +1,6 @@
 // 将Github Pages自动生成的Markdown渲染页面进行自动重绘
 // Powered by SoberJS
-// 自定义设置项区
+// 自定义设置项区 详见文档：https://kdxiaoyi.top/Pages-md-reRender/global-conf
 const /*文章授权协议*/conf_licen=`CC BY-NC 4.0`;
 const /*文章授权协议链接*/conf_licen_link=`https://creativecommons.org/licenses/by-nc/4.0/legalcode.zh-hans`;
 const /*在代码块下方添加复制代码按钮*/conf_codeCopyBtn=true;
@@ -29,6 +29,7 @@ const /*左侧边栏·第2格内容*/conf_sidebar_links=`
 Bilibili ↗</s-chip>`;
 const /*左侧边栏·第2格内容中没有按文档编写请启用此项*/conf_sidebar_links_preventDefault=false;
 const /*复制文本后向文本末尾添加一段文本，详见文档*/conf_copy_endnote=` ‖ 来自[%ETITLE%](%LINK%)，以${conf_licen}协议授权。`;
+const   /*阻止一些简易解除复制限制脚本工作并提示用户*/conf_prenevtOnclickOverwrite=true;
 const /*图片加载失败后的占位符图片*/conf_img_error_replace="https://rs.kdxiaoyi.top/res/images/load_err.svg";
 const /*为所有在新标签页打开的链接添加右上箭头*/conf_link_arrow=true;
 const   /*仅对含有 ↗ 或 $ 的链接生效*/conf_link_arrow_replace=true;
@@ -36,15 +37,14 @@ const   /*如果链接含有 ฿ 则将其修改为新标签页打开*/conf_link
 const   /*外链图标*/conf_link_arrow_icon=`<s-icon class="newWindowOpen"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960"><path d="M200-120q-33 0-56.5-23.5T120-200v-560q0-33 23.5-56.5T200-840h280v80H200v560h560v-280h80v280q0 33-23.5 56.5T760-120H200Zm188-212-56-56 372-372H560v-80h280v280h-80v-144L388-332Z"></path></svg></s-icon>`;
 const /*自定义边栏内容，禁用保持留空*/conf_replaceSidebar=``;
 const /*启用目录索引侧栏*/conf_index_sidebar=true;
-const /*启用目录统计，高级用法详见文档*/conf_index=true;
+const /*没做好启用无效 | 启用目录统计，高级用法详见文档*/conf_index=true;
 
-const /*插件版本（建议不要修改）*/PluginVer=["1.2.0beta",16];
+const /*插件版本（建议不要修改）*/PluginVer=["1.2.0",16];
 
 //插入重渲染代码
 document.body.innerHTML = `
   <!-- Pages Markdown Re-Render -->
   <!-- 页面重渲染插入代码开始 -->
-  <link rel="stylesheet" href="https://rs.kdxiaoyi.top/res/css/sober-theme-turquoise.css" />
   <style>
     html, body, s-page {
       height: 100%;
@@ -166,7 +166,7 @@ console.log('%cPages Markdown Re-Render v'+PluginVer[0]+'%c['+PluginVer[1]+'%c]\
 function getQueryString(name) { let reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)", "i"); let r = window.location.search.substr(1).match(reg); if (r != null) { return unescape(r[2]); }; return null; };
 function msg(Message, ConfirmText, isWarning) {let infoJson={};infoJson.root=document.querySelector('s-page');infoJson.text=Message;if (ConfirmText==undefined) {infoJson.action="";} else {infoJson.action=ConfirmText;};if (isWarning!=undefined) {infoJson.type="error";};customElements.get('s-snackbar').show(infoJson);console.output("创建了新的Snakbar\n"+JSON.stringify(infoJson));return infoJson;};
 document.debugging = false;
-function debug(mode) {if (mode==true) {document.debugging=true;msg("调试模式已启用","了解");return document.debugging;};if (mode==false) {document.debugging=false;msg("调试模式已禁用","了解");} else {document.debugging=!document.debugging;};return document.debugging;};
+function debug(mode) {if (mode==true) {document.debugging=true;msg("调试模式已启用","了解");} else {document.debugging=false;msg("调试模式已禁用","了解");};return document.debugging;};
 console.output = function (Message) {if (document.debugging) {console.log(Message);};};
 let localReg = /(127\.0\.0\.1)|(0\.0\.0\.0)|(localhost)/i;
 if (localReg.test(window.location.href)) {debug(true);msg("检测到本地调试","了解");};
@@ -186,6 +186,7 @@ if (getQueryString("debug")!=null) {debug(true);msg("检测到调试命令行","
       RefreshCountup(StartY,StartM,StartD)
       selectAllTextInElement(element)
       copyBtnDone(copyBtn, text)
+      preventCopyEventOverWrite()
       openImgView(imgsrc, imgTitle, imgAlt)
   */
 function scrollToTop() {
@@ -226,7 +227,7 @@ function refreshAppbar() {
 };
 
 //侧栏内容覆写
-if (!!conf_replaceSidebar) {document.getElementById("sidebar_left").innerHTML=conf_replaceSidebar;console.log("覆写sidebar内容");};
+if (!!conf_replaceSidebar) {document.getElementById("sidebar_left").innerHTML=conf_replaceSidebar;console.output("覆写sidebar内容");};
 
 //切换侧栏按钮点击
 document.getElementById("sidebar_toggle_btn").addEventListener("click",()=>{
@@ -272,10 +273,10 @@ if (conf_time[0] && !conf_replaceSidebar) {var Timing_intervalID = setInterval((
 //a元素新增右上箭头，修改打开位置
 if (conf_link_arrow) {
 document.querySelectorAll('a').forEach((aElement) => {
-  if (conf_link_target_replace||/\u0e3f/.test(aElement.innerHTML)) {aElement.target="_blank";};
+  if (conf_link_target_replace&&/\u0e3f/.test(aElement.innerHTML)) {aElement.target="_blank";console.log("为a写入了_blank的target属性");};
   if (conf_link_arrow_replace) {
     aElement.innerHTML=aElement.innerHTML.replace(/[\u2197\u0024\u0e3f]/, conf_link_arrow_icon);
-    console.log("为a添加了外链图标 (替换模式)");
+    console.output("为a添加了外链图标 (替换模式)");
     return;
   };
   if (
@@ -283,7 +284,7 @@ document.querySelectorAll('a').forEach((aElement) => {
     ||/*排除不在新窗口打开的链接*/ aElement.target!="_blank"
   ) {return;};
   aElement.innerHTML=aElement.innerHTML.replace(/\u0e3f/,"")+conf_link_arrow_icon;
-  console.log("为a添加了外链图标");
+  console.output("为a添加了外链图标");
 });
 };
 
@@ -349,18 +350,26 @@ if (!!conf_copy_endnote) {
     .replace(/%LINK%/,window.location)
     .replace(/%TITLE%/,UIt.innerHTML)
     .replace(/%ETITLE%/,title.innerHTML);
-  console.log("覆写复制操作处理\nendnote="+endnote);
+  console.output("覆写复制操作处理\nendnote="+endnote);
 document.addEventListener('copy', async (event) => {
   event.preventDefault();
   try {
-    console.log("向复制文本末尾追加endnote\nOriginText="+window.getSelection().toString());
+    console.output("向复制文本末尾追加endnote\nOriginText="+window.getSelection().toString());
     await navigator.clipboard.writeText(window.getSelection().toString() + endnote);
-    msg("已复制文本，请注意授权协议。","好");
+    msg(`已复制文本，请注意遵守授权协议${conf_licen}。`,`好`);
   } catch (err) {
-    console.log('无法复制文本: '+ err)
-    msg("复制失败，无法访问剪贴板。","好",true);
+    console.output('无法复制文本: '+ err)
+    msg("复制失败：无法访问剪贴板。","好",true);
   }
 });};
+function /*阻止一些常见的oncopy覆写*/preventCopyEventOverWrite() {
+  msg("您正在使用解除复制限制相关脚本，但请注意本站点不会限制您的复制行为，修改复制行为仅为添加版权提示尾注。","好",true);
+};
+if (conf_prenevtOnclickOverwrite) {
+  if (!(typeof removeCopyEvent == 'function')) {
+    Object.defineProperty(window, 'removeCopyEvent', {value: function() {preventCopyEventOverWrite();},writable: false});
+  } else {preventCopyEventOverWrite();};
+};
 
 //图片信息页功能
 document.getElementById("img_dialog_btn").addEventListener("click",()=>{

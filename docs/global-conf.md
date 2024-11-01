@@ -81,6 +81,11 @@ Z</s-chip>
 | `%ETITLE%` | 指代文章标题<br>区别在于前者是标题栏的标题，后者是检测到的文章标题。 |
 | `${}` | 引用页面中已有的配置项<br>例如`${conf_licen}`可以指代授权协议 |
 
+### `conf_prenevtOnclickOverwrite`
+启用后会阻止一些简易的反复制限制脚本的工作。
+
+> **不建议您使用任何技术措施来限制用户使用复制功能**，Pages-md-Render也永远不会加入限制用户复制内容的相关功能。。
+
 ### `conf_link_arrow`
 在指向新标签页的链接后方添加一个右上箭头。
 ### `conf_link_arrow_replace`
