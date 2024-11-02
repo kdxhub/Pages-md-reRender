@@ -38,8 +38,9 @@ const   /*外链图标*/conf_link_arrow_icon=`<s-icon class="newWindowOpen"><svg
 const /*自定义边栏内容，禁用保持留空*/conf_replaceSidebar=``;
 const /*启用目录索引侧栏*/conf_index_sidebar=true;
 const /*没做好启用无效 | 启用目录统计，高级用法详见文档*/conf_index=true;
+const /*没做好启用无效 | 在标题的最后添加一个按钮以复制链接指向这个标题*/conf_headerLinkCopyBrn=true;
 
-const /*插件版本（建议不要修改）*/PluginVer=["1.2.0",16];
+const /*插件版本（建议不要修改）*/PluginVer=["1.3.0beta1",17];
 
 //插入重渲染代码
 document.body.innerHTML = `
