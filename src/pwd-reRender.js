@@ -38,9 +38,12 @@ const   /*外链图标*/conf_link_arrow_icon=`<s-icon class="newWindowOpen"><svg
 const /*自定义边栏内容，禁用保持留空*/conf_replaceSidebar=``;
 const /*启用目录索引侧栏*/conf_index_sidebar=true;
 const /*没做好启用无效 | 启用目录统计，高级用法详见文档*/conf_index=true;
-const /*没做好启用无效 | 在标题的最后添加一个按钮以复制链接指向这个标题*/conf_headerLinkCopyBrn=true;
+const /*没做好启用无效 | 在标题的最后添加一个按钮以复制链接指向这个标题*/conf_headerLinkCopyBtn=true;
+const /*在页面底端增加文章脚注，为空不额外添加*/conf_footer=``;
+const /*没做好启用无效 同时有做一个页面对应配置的计划 | 要在页面中执行的JS脚本*/conf_otherJS=[];
+const /*没做好启用无效 同时有做一个页面对应配置的计划 | 要在页面中执行的CSS文件*/conf_otherCSS=[];
 
-const /*插件版本（建议不要修改）*/PluginVer=["1.3.0beta1",17];
+const /*插件版本（建议不要修改）*/PluginVer=["1.3.0",17];
 
 //插入重渲染代码
 document.body.innerHTML = `
@@ -91,14 +94,22 @@ document.body.innerHTML = `
     img.processed {
       min-width: 50%;
       max-width: 90%;
-      min-height: 50%;
-      max-height: 90%;
+      min-height: 20vh;
+      max-height: 60vh;
       margin: 0 auto;
       display: block;
     }
     code.processed {}
     .selectable {user-select:text;}
+    .unselectable {user-select:none;}
     s-icon.newWindowOpen {height:1em;width:1em;}
+    .site-footer {
+      padding: 0 5% 0.1rem 5%;
+      text-align: right;
+      width: 100%;
+      word-wrap: break-word;
+    }
+    .sidebar_drawer {padding:5px 5px 5px 5px;}
   </style>
   <s-page theme="auto" class="page_root" id="page_root">
     <s-dialog style="display:none;" id="img_dialog" size="full">
@@ -122,7 +133,7 @@ document.body.innerHTML = `
     <s-drawer id="sidebar">
       <div id="sidebar_left_parent" slot="start">
         <s-scroll-view style="max-height:100%;">
-          <div id="sidebar_left" style="padding:5px 5px 5px 5px;">
+          <div id="sidebar_left" class="sidebar_drawer">
           <!--左侧边栏内容-->
             <s-card type="" class="sidebar_head">
               <div slot="image"><img data-ui-img="true" src="${conf_sidebar_headimg_src}"></div>
@@ -137,30 +148,42 @@ document.body.innerHTML = `
           </div>
         <s-scroll-view>
       </div>
+      <div id="sidebar_right_parent" slot="end">
+        <s-scroll-view>
+          <div id="sidebar_right" class="sidebar_drawer"></div>
+        </s-scroll-view>
+      </div>
       <div>
         <s-scroll-view id="contentScroll" style="max-height:100%;"><div id="contentBG" class="selectable">
   <!-- 页面重渲染插入代码结束 -->
   `+document.body.innerHTML+`
-        </div></s-scroll-view></div>
+        <footer class="site-footer unselectable"><hr>${conf_footer}<br><small>Powered by <a href="http://github.com/kdxhub/Pages-md-reRender" target="_blank">kdxiaoyi/Pages-md-reRender</a>.</small></footer>
+        </div></s-scroll-view>
+      </div>
     </s-drawer>
+    <div data-readme="站点管理员插入的额外脚本内容" style="display:none;" id="extraScripts_Global">${extraScripts_Global}</div>
+    <div data-readme="页面配置插入的额外脚本内容" style="display:none;" id="extraScripts_Page"></div>
   </s-page>
 `;
 // 变量、常量定义区
-const page_root=document.getElementById("page_root");
-const UIt=document.getElementById("UIt");
-const link_a=document.createElement("a");
-const contentScroll=document.getElementById("contentScroll");
-const toTopBtn=document.getElementById("toTop");
-const title=document.querySelector("#contentBG > header > h1");
-const title_height=document.querySelector("#contentBG > header").offsetHeight - document.querySelector("#contentBG > header > h2").offsetHeight;
-const appbar=document.getElementById("appbar");
-const contentBG=document.getElementById("contentBG");
-const timeElement=document.getElementById('time');
+const page_root/*页面根元素<s-page>*/=document.getElementById("page_root");
+const UIt/*UItitle控件*/=document.getElementById("UIt");
+const link_a/*新建的白板链接元素*/=document.createElement("a");
+const contentScroll/*主体页面滚动条元素*/=document.getElementById("contentScroll");
+const toTopBtn/*回顶按钮元素*/=document.getElementById("toTop");
+const title/*文档标题元素*/=document.querySelector("#contentBG > header > h1");
+const title_height/*文档标题元素高度*/=document.querySelector("#contentBG > header").offsetHeight - document.querySelector("#contentBG > header > h2").offsetHeight;
+const appbar/*最上方操作栏元素*/=document.getElementById("appbar");
+const contentBG/*正文总框架元素*/=document.getElementById("contentBG");
+const content/*正文内容框架元素*/=document.getElementById("content");
+const timeElement/*建站时长计时显示文本元素*/=document.getElementById('time');
 var toTop_intervalID = -1;//回顶操作初始化
-const img_dialog=document.getElementById("img_dialog");
-const img_dialog_img=document.getElementById("img_dialog_img");
-const img_dialog_p=document.getElementById("img_dialog_p");
-const sidebar=document.getElementById("sidebar");
+const img_dialog/*查看大图UI根框架元素*/=document.getElementById("img_dialog");
+const img_dialog_img/*查看大图中的图片元素*/=document.getElementById("img_dialog_img");
+const img_dialog_p/*查看大图中文本描述元素*/=document.getElementById("img_dialog_p");
+const sidebar/*抽屉边栏总框架元素*/=document.getElementById("sidebar");
+const drawer_left/*左边栏框架元素*/=document.getElementById("sidebar_left");
+const drawer_right/*右边栏框架元素*/=document.getElementById("sidebar_right");
 console.log('%cPages Markdown Re-Render v'+PluginVer[0]+'%c['+PluginVer[1]+'%c]\nCopyright (C) 2024 kdxiaoyi. All right reserved.','color:#90BBB1;','color:#90BBB1;','color:#90BBB1;');
 
 //debug模式的检测与切换
@@ -191,7 +214,9 @@ if (getQueryString("debug")!=null) {debug(true);msg("检测到调试命令行","
       openImgView(imgsrc, imgTitle, imgAlt)
   */
 function scrollToTop() {
+  /*回顶自动清除章节锚点*/
   window.location.hash = "";
+  /*计算回顶速度并创建回顶循环*/
   var toTop_interval_speed = -(contentScroll.scrollTop/(80));
   if (toTop_intervalID != -1) {toTop_interval_speed = toTop_interval_speed*1.5;return;};
   toTop_intervalID = setInterval(() => {
@@ -208,7 +233,12 @@ function openURL(URL,IsInPresentWindow) {if (IsInPresentWindow != undefined) {li
 toTopBtn.addEventListener("animationend", (event) => {if (toTopBtn.className == "fadeOut") {toTopBtn.style="display: none;";};});
 contentScroll.onscroll = function() {refreshAppbar();};
 function refreshAppbar() {
-  if (contentScroll.scrollTop/title_height <= 1.5) {UIt.style="opacity:"+(contentScroll.scrollTop/title_height)+";";console.output("UItitle透明度改变");};
+  /*修改UItitle的透明度*/
+  if (contentScroll.scrollTop/title_height <= 1.5) {
+    UIt.style="opacity:"+(contentScroll.scrollTop/title_height)+";";
+    console.output("UItitle透明度改变");
+  };
+  /*滚过一屏后显示回顶按钮的动画*/
   if (contentScroll.scrollTop >= contentScroll.offsetHeight) {
     if (toTopBtn.className != "fadeIn") {
       toTopBtn.setAttribute("onclick","scrollToTop();");
@@ -228,7 +258,26 @@ function refreshAppbar() {
 };
 
 //侧栏内容覆写
-if (!!conf_replaceSidebar) {document.getElementById("sidebar_left").innerHTML=conf_replaceSidebar;console.output("覆写sidebar内容");};
+if (!!conf_replaceSidebar) {
+  document.getElementById("sidebar_left").innerHTML=conf_replaceSidebar;
+  console.output("覆写sidebar内容");
+};
+
+//正文内容标题统计与处理
+document.querySelectorAll('div#contentBG h1, div#contentBG h2, div#contentBG h3, div#contentBG h4, div#contentBG h5, div#contentBG h6').forEach((HeaderElement) => {
+  if (!HeaderElement.id) {/*判断标题元素是否有id，若无则写入一个*/
+    let name=`_`+HeaderElement.innerHTML;
+    HeaderElement.id=name;
+  } else {
+    let name=HeaderElement.id;
+  };
+  if (conf_headerLinkCopyBtn) {};
+});
+
+
+//读取页面标题
+setUItitle(title.innerHTML);
+console.output("设置UI标题\nUItitle.innerHTML="+title.innerHTML);
 
 //切换侧栏按钮点击
 document.getElementById("sidebar_toggle_btn").addEventListener("click",()=>{
@@ -237,11 +286,7 @@ document.getElementById("sidebar_toggle_btn").addEventListener("click",()=>{
   console.output("切换Sidebar显示");
 });
 
-//读取页面标题
-setUItitle(title.innerHTML);
-console.output("设置UI标题\nUItitle.innerHTML="+title.innerHTML);
-
-//章节锚点额外处理，即动态重算s-drawer的高度
+//即动态重算s-drawer的高度
 sidebar.style.height = `${document.body.scrollHeight-appbar.offsetHeight}px`;
 console.output("重算s-drawer高度\nsidebar.style.height="+sidebar.offsetHeight+"px");
 window.addEventListener('resize',() => {/*当窗口大小改变时也要重算高度*/
@@ -265,11 +310,60 @@ if (!!document.getElementById("mdRender_config")) {
     setUItitle(configDiv.dataset.title);
     console.output("UItitle被覆写\nUItitle.innerHTML"+configDiv.dataset.title);
   };
+  if (!!configDiv.dataset.redirect) {
+    /* redirect 重定向中间页 */
+    let redirectInfo=document.getElementById("redirectInfo");
+    if (!redirectInfo) {redirectInfo=``;} else {redirectInfo=redirectInfo.innerHTML;};
+    contentBG.innerHTML=`<div style="display: grid;width:100vw;height:100%;place-items: center;" class="unselectable" id="redirectDiv"><center style="width:100vw;"><div id="redirectTitle">正在跳转……</div><br><s-linear-progress id="redirectProcess" style="width:50%;margin: 0.2ch 0 0.2ch 0" value="0" max="100" animated="true" indeterminate="true"></s-linear-progress><br>${redirectInfo}</center></div>`;
+    const redirectDiv=document.getElementById("redirectDiv");
+    redirectDiv.style.height=`${document.body.scrollHeight-2*appbar.offsetHeight}px`;
+    window.addEventListener('resize',() => {/*当窗口大小改变时也要重算高度*/
+      redirectDiv.style.height = `${document.body.scrollHeight-2*appbar.offsetHeight}px`;
+      console.output("重算redirectDiv\nredirectDiv.style.height="+redirectDiv.offsetHeight+"px");
+    });
+    /*处理跳转缓冲期动画*/
+    setTimeout(()=>{
+      document.getElementById("redirectTitle").innerHTML=`✓ 已跳转`;
+      document.getElementById("redirectProcess").indeterminate=false;
+    },1400);
+    setTimeout(()=>{
+      document.getElementById("redirectProcess").value=100;
+    },1600);
+    setTimeout(()=>{
+      openURL(configDiv.dataset.redirect,true);
+    },2200);
+    console.output("Redirect中间页模式，目标为"+configDiv.dataset.redirect);
+  };
 };
 
 //建站时长刷新
-function RefreshCountup(StartY,StartM,StartD) {let now = Date.now();end = new Date(StartY,StartM-1,StartD);ends = end.getTime();let ss = ends - now;let s = Math.floor(ss/1000);let day= -1*Math.floor(s / 60 / 60 / 24);let hours = -1*Math.floor(s / 60 / 60 % 24);let min = -1*Math.floor(s / 60 % 60 );let sec = -1*Math.floor(s % 60 );timeElement.innerHTML = "<center><small>本站已建立"+day+"天"+hours+"时"+min+"分"+sec+"秒</small></center>";};
-if (conf_time[0] && !conf_replaceSidebar) {var Timing_intervalID = setInterval(() => {RefreshCountup(conf_time[1],conf_time[2],conf_time[3])}, 1000);console.output("启用建站时长计时 loop#"+Timing_intervalID+`\nSince ${conf_time[1]}-${conf_time[2]}-${conf_time[3]}`);} else {timeElement.remove();};
+/* function RefreshCountup(StartY,StartM,StartD) {
+  let now = Date.now();
+  let end = new Date(StartY,StartM-1,StartD);
+  ends = end.getTime();
+  let ss = ends - now;
+  let s = Math.floor(ss/1000);
+  let day= -1*Math.floor(s / 60 / 60 / 24);
+  let hours = -1*Math.floor(s / 60 / 60 % 24);
+  let min = -1*Math.floor(s / 60 % 60 );
+  let sec = -1*Math.floor(s % 60 );
+  timeElement.innerHTML = "<center><small>本站已建立"+day+"天"+hours+"时"+min+"分"+sec+"秒</small></center>";
+};  老算法就留着这里吧，反正编译时会删掉注释内容*/
+function RefreshCountup(countupY, countupM, countupD) {
+  /*计算时间差，JS月份从0开始要减1*/
+  let timeDifference = Date.now() - new Date(countupY, countupM - 1, countupD);
+  /*转换日期差*/
+  let countupD_ = Math.floor(timeDifference / (1000 * 60 * 60 * 24));
+  let countupH = Math.floor((timeDifference % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+  let countupM_ = Math.floor((timeDifference % (1000 * 60 * 60)) / (1000 * 60));
+  let countupS = Math.floor((timeDifference % (1000 * 60)) / 1000);
+  /*更新显示*/
+  timeElement.innerHTML = `<center><small>本站已建立${countupD_}天${countupH}小时${countupM_}分钟${countupS}秒</small></center>`;
+};
+if (conf_time[0] && !conf_replaceSidebar) {
+  var Timing_intervalID = setInterval(() => {RefreshCountup(conf_time[1],conf_time[2],conf_time[3])}, 1000);
+  console.output("启用建站时长计时 loop#"+Timing_intervalID+`\nSince ${conf_time[1]}-${conf_time[2]}-${conf_time[3]}`);
+} else {timeElement.remove();};
 
 //a元素新增右上箭头，修改打开位置
 if (conf_link_arrow) {
@@ -291,6 +385,7 @@ document.querySelectorAll('a').forEach((aElement) => {
 
 //code元素新增复制到剪贴板按钮
 function selectAllTextInElement(element) {
+  /*选中一个元素内所有的文本*/
   let range = document.createRange();
   range.selectNodeContents(element);
   let selection = window.getSelection();
@@ -321,15 +416,18 @@ document.querySelectorAll('code').forEach((codeElement) => {
   ) {return;};
   codeElement.parentNode.parentNode.parentNode.style.margin="5px 0 5px 0";
   console.output("为Code添加CodeCopyBtn");
-  codeElement.classList.add("processed");
+  codeElement.classList.add("processed");/*添加标志位*/
+  /*为CopyBtn添加属性*/
   let copyCodeBtn = document.createElement('s-chip');
   copyCodeBtn.setAttribute("type","elevated");
   copyCodeBtn.setAttribute("class","font-default");
   copyCodeBtn.setAttribute("clickable","true");
-  if (!navigator.clipboard) {copyCodeBtn.setAttribute("clickable","false");console.output("Clipboard API：不存在此方法");};
+  if /*检查Cilpboard API状态*/ (!navigator.clipboard) {copyCodeBtn.setAttribute("clickable","false");console.output("Clipboard API：不存在此方法");};
   copyCodeBtn.innerHTML=`<s-icon slot="start"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960"><path d="M360-240q-33 0-56.5-23.5T280-320v-480q0-33 23.5-56.5T360-880h360q33 0 56.5 23.5T800-800v480q0 33-23.5 56.5T720-240H360Zm0-80h360v-480H360v480ZM200-80q-33 0-56.5-23.5T120-160v-560h80v560h440v80H200Zm160-240v-480 480Z"></path></svg></s-icon>${conf_codeCopyBtn_tip}`;
+  /*添加事件绑定*/
   copyCodeBtn.addEventListener('click',() => {
     window.getSelection().removeAllRanges();
+    /*先选中代码块内全部代码，再利用Cilpboard API写入已经选中的内容，从而实现保留格式的代码复制*/
     selectAllTextInElement(copyCodeBtn.parentElement.querySelectorAll("code")[0]);
     navigator.clipboard.writeText(window.getSelection().toString()).then(
       function () {/* clipboard successfully set */
@@ -341,6 +439,7 @@ document.querySelectorAll('code').forEach((codeElement) => {
       },
     );
   });
+  /*将准备完成的CopyBtn插入到代码块中*/
   codeElement.parentNode.insertBefore(copyCodeBtn, codeElement.nextSibling);
 });};
 
@@ -388,31 +487,58 @@ document.getElementById("img_dialog_open_btn").addEventListener("click",()=>{
 });
 if (!conf_imgView_open) {document.getElementById("img_dialog_open_btn").remove();};
 document.querySelectorAll('img').forEach((imgElement) => {
-  imgElement.addEventListener("load",()=>{
+  imgElement.addEventListener("load",()=>{/*图片加载完成后重算滚动条高度*/
     if (imgElement.dataset.status=="error") {return;};
+    imgElement.dataset.originSrc=imgElement.src;
     contentBG.style.height="initial";
+    imgElement.dataset.status=="loaded";
     contentBG.style.height=`${contentBG.offsetHeight+appbar.offsetHeight}px`;
     console.output("修改页面真实高度\ncontentBG.style.height="+contentBG.style.height);
   });
-  imgElement.addEventListener("error",()=>{
+  imgElement.addEventListener("error",()=>{/*图片加载出错则更换为错误图片占位符*/
     if (imgElement.dataset.status=="error") {
       msg("坏链占位符图片加载错误，请联系站长处理","好",true);
       console.warn("错误：无法加载图片加载错误占位符图片。\n conf_img_error_replace="+conf_img_error_replace);
       return;
     };
     imgElement.dataset.status="error";
+    imgElement.dataset.originSrc=imgElement.src;
     imgElement.src=conf_img_error_replace;
     console.output("某个图片加载失败\nsrc="+imgElement.src);
   });
   /*添加文档流图片点击后放大事件*/
-  if (!conf_imgView) {return;};
-  if (imgElement.dataset.uiImg=="true") {return;};
+  /*存废行 if (!conf_imgView) {return;};
+  if (imgElement.dataset.uiImg=="true") {return;};*/
   imgElement.classList.add("processed");
-  if (conf_imgView_imgse) {imgElement.addEventListener("click",()=>{openImgView(imgElement.src.replace(/\.md\./,"."),imgElement.title,imgElement.alt);});} else {imgElement.addEventListener("click",()=>{openImgView(imgElement.src,imgElement.title);});};
+  if (conf_imgView_imgse) {
+    imgElement.addEventListener("click",function (){
+      openImgView(imgElement.src.replace(/\.md\./,"."),imgElement.title,imgElement.alt,imgElement.dataset.originSrc,this);
+    });
+  } else {
+    imgElement.addEventListener("click",function(){
+      openImgView(imgElement.src,imgElement.title,imgElement.alt,imgElement.dataset.originSrc,this);
+    });
+  };
   console.output("向img添加了imgView绑定");
 });
-function openImgView(imgsrc, imgTitle, imgAlt) {
+function openImgView(imgsrc, imgTitle, imgAlt, originSrc, imgElement) {
   /*以指定uri打开imgView*/
+  if (/*如果图片加载失败不再继续使用当前src*/imgElement.dataset.status == "error") {
+    /*不再继续打开图片，而是重新加载图片*/
+    imgElement.dataset.status="reloading";
+    imgElement.src=originSrc;
+    console.output("尝试重新加载出错图片\nOriginSrc="+originSrc);
+    contentBG.style.height=`${contentBG.offsetHeight+appbar.offsetHeight}px`;
+    console.output("修改页面真实高度\ncontentBG.style.height="+contentBG.style.height);
+    /*提示好像不是很好，ban了先 
+    if (!conf_imgView||(imgElement.dataset.uiImg=="true")) {return;};
+    msg("此图片加载失败，正在重新加载……","好",true);*/
+    return;
+  };
+  if (
+    /*配置文件中未启用查看大图时直接取消后续执行*/!conf_imgView
+    /*是UI图片也取消执行*/||(imgElement.dataset.uiImg=="true")
+  ) {return;};
   img_dialog_img.src=imgsrc;
   let imgFileName=imgsrc.split("/").pop().split("\\").pop();
   if (!imgTitle) {

@@ -4,6 +4,21 @@ description: "Update Log"
 ---
 
 参阅Git提交记录（[Gitee](https://gitee.com/kdxiaoyi/Pages\-md\-reRender/commits/master)/[Github](https://gitee.com/kdxhub/Pages\-md\-reRender/commits/master)）。
+
+## v1.3.0 [17]
+> 目前此版本处在<u>Beta预览</u>中，不代表最终效果。
+
+* \+ imgView新增加载错误点击重试功能
+* \~ imgView现在不会把占位图片作为大图加载了
+* \~ 调整了imgView的最大高度以防止页面过长
+* \+ 新增了右侧边栏框架
+* ~ 修改了边栏抽屉的一些实现
+* ~ 修复了建站时长计时出现异常数据的BUG
+* ~ 优化建站时长计时代码逻辑
+* \+ 新增页面Footer覆写
+* \+ 新增redirect页面参数以快速插入重定向页面
+* \- 删除部分折叠代码，并增加对应注释
+
 ## v1.2.0 [16]
 * \+ 为左侧边栏添加了滚动条以适应高度不够的页面下左边栏内容
 * ~ 完善左侧边栏覆写

@@ -25,7 +25,7 @@ description: "一款极其轻量且低侵入的Github Pages主题"
 @import "background.css文件路径";
 ```
 
-> 绝大部分的Pages-md-reRender所需的css都是定义在代码内的，因此你也可以尝试不引入`background.css`。
+> 绝大部分的Pages-md-reRender所需的css都是定义在代码内的，因此你也可以尝试不引入`background.css`，但这样您需要自行处理深色模式适配。
 
 > 目前适配SoberJS `0.4.2`版本。使用不期的版本可能导致未知问题。
 

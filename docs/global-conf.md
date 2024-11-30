@@ -47,6 +47,10 @@ Z</s-chip>
 启用这个配置后会自动计算当前文档的目录索引，更多可参考[`indexDiv`页面配置项](./page-conf#indexDiv)。
 ### `conf_index_sidebar`
 启用文档目录索引侧栏。需要启用`conf_index`。
+### `conf_footer`
+在文档末尾处添加的尾注内容，支持HTML语法。
+
+> 即使不启用此项，仍然会添加一行*Powered by Pages-md-reRender*，请知悉。
 
 ## 用户交互(Interface) {#interface}
 ### `conf_codeCopyBtn`
@@ -84,7 +88,7 @@ Z</s-chip>
 ### `conf_prenevtOnclickOverwrite`
 启用后会阻止一些简易的反复制限制脚本的工作。
 
-> **不建议您使用任何技术措施来限制用户使用复制功能**，Pages-md-Render也永远不会加入限制用户复制内容的相关功能。。
+> **不建议您使用任何技术措施来限制用户使用复制功能**，Pages-md-reRender也永远不会加入限制用户复制内容的相关功能。。
 
 ### `conf_link_arrow`
 在指向新标签页的链接后方添加一个右上箭头。
@@ -97,6 +101,8 @@ Z</s-chip>
 启用后，如果链接文本内含有U+0E3F(`฿`)字符，则将其修改为在新标签页打开。
 ### `conf_link_arrow_icon`
 定义链接右上小箭头应该被替换为什么。
+### `conf_conf_headerLinkCopyBrn`
+启用后允许点击标题并复制指向该标题的链接。
 ## 文档属性 {#attribute}
 ### `conf_licen`
 设置文档的版权协议。
