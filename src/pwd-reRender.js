@@ -40,10 +40,9 @@ const /*启用目录索引侧栏*/conf_index_sidebar=true;
 const /*没做好启用无效 | 启用目录统计，高级用法详见文档*/conf_index=true;
 const /*没做好启用无效 | 在标题的最后添加一个按钮以复制链接指向这个标题*/conf_headerLinkCopyBtn=true;
 const /*在页面底端增加文章脚注，为空不额外添加*/conf_footer=``;
-const /*没做好启用无效 同时有做一个页面对应配置的计划 | 要在页面中执行的JS脚本*/conf_otherJS=[];
-const /*没做好启用无效 同时有做一个页面对应配置的计划 | 要在页面中执行的CSS文件*/conf_otherCSS=[];
+const /*没做好启用无效 | 在脚注中显示用户访问Cloudflare节点信息，仅限域名经过了CF CDN使用*/conf_footer_cf=``;
 
-const /*插件版本（建议不要修改）*/PluginVer=["1.3.0",17];
+const /*插件版本（建议不要修改）*/PluginVer=["1.3.0beta1",17];
 
 //插入重渲染代码
 document.body.innerHTML = `
@@ -57,7 +56,7 @@ document.body.innerHTML = `
       -webkit-tap-highlight-color: transparent;
     }
     #contentBG {
-      width: 100vw;
+      width: 100%;
       flex-grow:1;
       overflow: auto;
     }
@@ -110,6 +109,16 @@ document.body.innerHTML = `
       word-wrap: break-word;
     }
     .sidebar_drawer {padding:5px 5px 5px 5px;}
+    s-fab {
+      position: absolute;
+      background: transparent;
+      backdrop-filter: blur(10px);
+      height: 48px;
+      width: 48px;
+      right: 3%;
+      bottom: 5%;
+      flex-shrink: 0;
+    }
   </style>
   <s-page theme="auto" class="page_root" id="page_root">
     <s-dialog style="display:none;" id="img_dialog" size="full">
@@ -149,20 +158,27 @@ document.body.innerHTML = `
         <s-scroll-view>
       </div>
       <div id="sidebar_right_parent" slot="end">
-        <s-scroll-view>
-          <div id="sidebar_right" class="sidebar_drawer"></div>
+        <s-scroll-view style="max-height:100%;">
+          <div id="sidebar_right" class="sidebar_drawer">
+          <!--右侧边栏内容-->
+            <div id="index_links_parent"><ul id="index_links"></ul></div>
+          </div>
         </s-scroll-view>
       </div>
       <div>
         <s-scroll-view id="contentScroll" style="max-height:100%;"><div id="contentBG" class="selectable">
+        <s-tooltip style="pointer-events:auto;">
+          <s-fab id="sidebar_right_toggle_btn" slot="trigger">
+            <s-icon><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960"><path d="M560-564v-68q33-14 67.5-21t72.5-7q26 0 51 4t49 10v64q-24-9-48.5-13.5T700-600q-38 0-73 9.5T560-564Zm0 220v-68q33-14 67.5-21t72.5-7q26 0 51 4t49 10v64q-24-9-48.5-13.5T700-380q-38 0-73 9t-67 27Zm0-110v-68q33-14 67.5-21t72.5-7q26 0 51 4t49 10v64q-24-9-48.5-13.5T700-490q-38 0-73 9.5T560-454ZM260-320q47 0 91.5 10.5T440-278v-394q-41-24-87-36t-93-12q-36 0-71.5 7T120-692v396q35-12 69.5-18t70.5-6Zm260 42q44-21 88.5-31.5T700-320q36 0 70.5 6t69.5 18v-396q-33-14-68.5-21t-71.5-7q-47 0-93 12t-87 36v394Zm-40 118q-48-38-104-59t-116-21q-42 0-82.5 11T100-198q-21 11-40.5-1T40-234v-482q0-11 5.5-21T62-752q46-24 96-36t102-12q58 0 113.5 15T480-740q51-30 106.5-45T700-800q52 0 102 12t96 36q11 5 16.5 15t5.5 21v482q0 23-19.5 35t-40.5 1q-37-20-77.5-31T700-240q-60 0-116 21t-104 59ZM280-494Z"></path></svg></s-icon>
+          </s-fab>
+          查看目录
+        </s-tooltip>
   <!-- 页面重渲染插入代码结束 -->
   `+document.body.innerHTML+`
-        <footer class="site-footer unselectable"><hr>${conf_footer}<br><small>Powered by <a href="http://github.com/kdxhub/Pages-md-reRender" target="_blank">kdxiaoyi/Pages-md-reRender</a>.</small></footer>
+        <footer class="site-footer unselectable"></hr>${conf_footer}<br><small>Powered by <a href="http://github.com/kdxhub/Pages-md-reRender" target="_blank">kdxiaoyi/Pages-md-reRender</a>.</small></footer>
         </div></s-scroll-view>
       </div>
     </s-drawer>
-    <div data-readme="站点管理员插入的额外脚本内容" style="display:none;" id="extraScripts_Global">${extraScripts_Global}</div>
-    <div data-readme="页面配置插入的额外脚本内容" style="display:none;" id="extraScripts_Page"></div>
   </s-page>
 `;
 // 变量、常量定义区
@@ -179,11 +195,14 @@ const content/*正文内容框架元素*/=document.getElementById("content");
 const timeElement/*建站时长计时显示文本元素*/=document.getElementById('time');
 var toTop_intervalID = -1;//回顶操作初始化
 const img_dialog/*查看大图UI根框架元素*/=document.getElementById("img_dialog");
-const img_dialog_img/*查看大图中的图片元素*/=document.getElementById("img_dialog_img");
-const img_dialog_p/*查看大图中文本描述元素*/=document.getElementById("img_dialog_p");
+const img_dialog_img/*查看大图UI中的图片元素*/=document.getElementById("img_dialog_img");
+const img_dialog_p/*查看大图UI中文本描述元素*/=document.getElementById("img_dialog_p");
 const sidebar/*抽屉边栏总框架元素*/=document.getElementById("sidebar");
 const drawer_left/*左边栏框架元素*/=document.getElementById("sidebar_left");
+const drawer_left_parent/*左边栏框架父元素*/=document.getElementById("sidebar_left_parent");
 const drawer_right/*右边栏框架元素*/=document.getElementById("sidebar_right");
+const drawer_right_parent/*右边栏框架父元素*/=document.getElementById("sidebar_right_parent");
+const index_links/*右边栏中标题链接区父元素*/=document.getElementById("index_links");
 console.log('%cPages Markdown Re-Render v'+PluginVer[0]+'%c['+PluginVer[1]+'%c]\nCopyright (C) 2024 kdxiaoyi. All right reserved.','color:#90BBB1;','color:#90BBB1;','color:#90BBB1;');
 
 //debug模式的检测与切换
@@ -202,7 +221,10 @@ if (getQueryString("debug")!=null) {debug(true);msg("检测到调试命令行","
       msg(Message, ConfirmText, isWarning)
       debug(mode)
       console.output(Message)
+      resetDrawerHeight()
+      resetDrawer()
       scrollToTop()
+      scrollToHash(goalHash)
       changeStyle(el, arr)
       setUItitle(Title)
       openURL(URL,IsInPresentWindow)
@@ -213,7 +235,23 @@ if (getQueryString("debug")!=null) {debug(true);msg("检测到调试命令行","
       preventCopyEventOverWrite()
       openImgView(imgsrc, imgTitle, imgAlt)
   */
+function resetDrawerHeight() {
+  sidebar.style.height = `${document.body.scrollHeight-appbar.offsetHeight}px`;
+  console.output("重算s-drawer高度\nsidebar.style.height="+sidebar.offsetHeight+"px");
+  contentBG.style.height="initial";
+  contentBG.style.height=`${contentBG.offsetHeight+appbar.offsetHeight}px`;
+  console.output("修改页面真实高度\ncontentBG.style.height="+contentBG.style.height);
+};
+function refreshDrawer() {
+  drawer_left_parent.style.display=`none`;
+  drawer_right_parent.style.display=`none`;
+  setTimeout(() => {
+    drawer_left_parent.style.display=``;
+    drawer_right_parent.style.display=``;
+  }, 10);
+};
 function scrollToTop() {
+  /*关闭所有侧栏*/sidebar.dismiss("end");sidebar.dismiss();
   /*回顶自动清除章节锚点*/
   window.location.hash = "";
   /*计算回顶速度并创建回顶循环*/
@@ -222,20 +260,37 @@ function scrollToTop() {
   toTop_intervalID = setInterval(() => {
     contentScroll.scrollBy(0,toTop_interval_speed);
     console.output("回顶循环#"+toTop_intervalID+"执行操作");
-    if (contentScroll.scrollTop == 0) {clearInterval(toTop_intervalID);console.output("回顶循环#"+toTop_intervalID+"操作完成");toTop_intervalID=-1;};
+    if (contentScroll.scrollTop <= 0) {clearInterval(toTop_intervalID);console.output("回顶循环#"+toTop_intervalID+"操作完成");toTop_intervalID=-1;};
   }, 1);
   console.output("创建新的回顶循环句柄#"+toTop_intervalID);
+};
+function scrollToHash(goalHash) {
+  let goalEle=document.getElementById(goalHash);
+  if (!goalEle) /*没有获取到指定元素*/ {msg(`不存在的章节「${goalHash}」`,"好",true);return false;};
+  /*关闭所有侧栏*/sidebar.dismiss("end");sidebar.dismiss();
+  /*计算要结束滚动时滚动条的位置*/
+  let toTop_goalEle_offsetTop = goalEle.offsetTop;
+  while ((contentBG.offsetHeight-toTop_goalEle_offsetTop)<contentScroll.offsetHeight) {toTop_goalEle_offsetTop-=contentScroll.offsetHeight;console.log("计算要结束滚动时滚动条的位置时滚动条超出可滚动范围");};
+  /*计算滚动速度并创建滚动循环*/
+  var toTop_interval_speed = (goalEle.offsetTop - appbar.offsetHeight)/(80);
+  if (toTop_intervalID/*共用1个id防止出bug*/ != -1) {toTop_interval_speed = toTop_interval_speed*1.5;return;};
+  toTop_intervalID = setInterval(() => {
+    contentScroll.scrollBy(0,toTop_interval_speed);
+    console.output("滚动循环#"+toTop_intervalID+"执行操作");
+    if (toTop_interval_speed>=0 && contentScroll.scrollTop >= toTop_goalEle_offsetTop) {clearInterval(toTop_intervalID);console.output("滚动循环#"+toTop_intervalID+"操作完成");toTop_intervalID=-1;openURL(`#${goalHash}`,true);refreshDrawer();};
+    if (toTop_interval_speed<=0 && contentScroll.scrollTop <= toTop_goalEle_offsetTop) {clearInterval(toTop_intervalID);console.output("滚动循环#"+toTop_intervalID+"操作完成");toTop_intervalID=-1;openURL(`#${goalHash}`,true);refreshDrawer();};
+  }, 1);
+  console.output("创建新的滚动循环句柄#"+toTop_intervalID);
 };
 function setUItitle(Title) {UIt.innerHTML=Title;};
 function openURL(URL,IsInPresentWindow) {if (IsInPresentWindow != undefined) {link_a.target="_self";} else {link_a.target="_blank";};link_a.href=URL;link_a.click();};
 
 //title动画和回顶按钮显隐
 toTopBtn.addEventListener("animationend", (event) => {if (toTopBtn.className == "fadeOut") {toTopBtn.style="display: none;";};});
-contentScroll.onscroll = function() {refreshAppbar();};
 function refreshAppbar() {
   /*修改UItitle的透明度*/
   if (contentScroll.scrollTop/title_height <= 1.5) {
-    UIt.style="opacity:"+(contentScroll.scrollTop/title_height)+";";
+    UIt.style.opacity=contentScroll.scrollTop/title_height;
     console.output("UItitle透明度改变");
   };
   /*滚过一屏后显示回顶按钮的动画*/
@@ -256,6 +311,7 @@ function refreshAppbar() {
     };
   };
 };
+contentScroll.addEventListener("scroll", refreshAppbar);
 
 //侧栏内容覆写
 if (!!conf_replaceSidebar) {
@@ -264,34 +320,63 @@ if (!!conf_replaceSidebar) {
 };
 
 //正文内容标题统计与处理
+let hn_last_level=1;
+let hn_index_cache="";
 document.querySelectorAll('div#contentBG h1, div#contentBG h2, div#contentBG h3, div#contentBG h4, div#contentBG h5, div#contentBG h6').forEach((HeaderElement) => {
+  if (HeaderElement.className/*不处理文章开头的副标题*/.includes("project-tagline")) {return;};
+  let hn_level=HeaderElement.tagName.replace(/\D/g,"");
   if (!HeaderElement.id) {/*判断标题元素是否有id，若无则写入一个*/
     let name=`_`+HeaderElement.innerHTML;
     HeaderElement.id=name;
   } else {
     let name=HeaderElement.id;
   };
-  if (conf_headerLinkCopyBtn) {};
+  if (conf_headerLinkCopyBtn && !HeaderElement.className/*不处理文章开头的标题*/.includes("project-name")) {
+    
+  };
+  if (conf_index) {
+    if (hn_level > hn_last_level) /*如果进入下级标题，则需要新建ul*/ {hn_index_cache += `<ul>`.repeat(hn_level-hn_last_level);};
+    if (hn_level < hn_last_level) /*如果进入上级标题则结束ul*/ {hn_index_cache += `</ul>`.repeat(hn_last_level-hn_level);};
+    hn_index_cache += `<li><a href="javascript:scrollToHash('${HeaderElement.id}');">${HeaderElement.innerHTML}</a></li>`;
+  };
+  hn_last_level=hn_level;
 });
-
+if (conf_index) {
+  /*启用后要新增对应的按钮来展开右栏*/
+  index_links.innerHTML=hn_index_cache;
+  document.getElementById("sidebar_right_toggle_btn").addEventListener("click",()=>{
+    if (toTop_intervalID !== -1) /*有存在的回顶循环时不能展开菜单*/ {return;};
+    window.getSelection().removeAllRanges();
+    sidebar.dismiss();
+    sidebar.toggle("end");
+  });
+};
 
 //读取页面标题
 setUItitle(title.innerHTML);
 console.output("设置UI标题\nUItitle.innerHTML="+title.innerHTML);
 
-//切换侧栏按钮点击
+//切换左侧栏按钮点击
 document.getElementById("sidebar_toggle_btn").addEventListener("click",()=>{
+  if (toTop_intervalID !== -1) /*有存在的回顶循环时不能展开菜单*/ {return;};
   window.getSelection().removeAllRanges();
+  sidebar.dismiss("end");
   sidebar.toggle();
   console.output("切换Sidebar显示");
 });
 
-//即动态重算s-drawer的高度
-sidebar.style.height = `${document.body.scrollHeight-appbar.offsetHeight}px`;
-console.output("重算s-drawer高度\nsidebar.style.height="+sidebar.offsetHeight+"px");
-window.addEventListener('resize',() => {/*当窗口大小改变时也要重算高度*/
-  sidebar.style.height = `${document.body.scrollHeight-appbar.offsetHeight}px`;
-  console.output("重算s-drawer高度\nsidebar.style.height="+sidebar.offsetHeight+"px");
+//动态重算s-drawer的高度
+resetDrawerHeight();
+window.addEventListener('resize', resetDrawerHeight/*当窗口大小改变时也要重算高度*/);
+
+//章节锚点改变事件注册
+window.addEventListener('hashchange', () => {
+  /*关闭所有侧栏*/sidebar.dismiss("end");sidebar.dismiss();
+  /*更新UItitle透明度*/
+  UIt.style.opacity=contentScroll.scrollTop/title_height;
+  /*修复章节锚点跳转页面底部时导致布局异常bug*/
+  refreshDrawer();
+  refreshAppbar();
 });
 
 //检查页面设置元素并应用
@@ -452,7 +537,8 @@ if (!!conf_copy_endnote) {
     .replace(/%ETITLE%/,title.innerHTML);
   console.output("覆写复制操作处理\nendnote="+endnote);
 document.addEventListener('copy', async (event) => {
-  event.preventDefault();
+  /*没什么用先注释掉
+  event.preventDefault();*/
   try {
     console.output("向复制文本末尾追加endnote\nOriginText="+window.getSelection().toString());
     await navigator.clipboard.writeText(window.getSelection().toString() + endnote);
@@ -480,7 +566,7 @@ document.getElementById("img_dialog_btn").addEventListener("click",()=>{
 });
 document.getElementById("img_dialog_open_btn").addEventListener("click",()=>{
   /*imgView查看原图按钮*/
-  if ((/ax1x\.com/.test(img_dialog_img.src)) && (conf_imgView_imgse_noRes)) {openURL(`https://imgse.com/i/`+img_dialog_img.src.split("/").pop().split(".")[0]);} else {openURL(img_dialog_img.src);};
+  if ((/ax1x\.com/.test(img_dialog_img.dataset.originSrc)) && (conf_imgView_imgse_noRes)) {openURL(`https://imgse.com/i/`+img_dialog_img.dataset.originSrc.split("/").pop().split(".")[0]);} else {openURL(img_dialog_img.dataset.originSrc);};
   img_dialog.setAttribute("style","display:none;");
   img_dialog.dismiss();
   console.output("imgView关闭（查看原图）");
@@ -490,12 +576,10 @@ document.querySelectorAll('img').forEach((imgElement) => {
   imgElement.addEventListener("load",()=>{/*图片加载完成后重算滚动条高度*/
     if (imgElement.dataset.status=="error") {return;};
     imgElement.dataset.originSrc=imgElement.src;
-    contentBG.style.height="initial";
     imgElement.dataset.status=="loaded";
-    contentBG.style.height=`${contentBG.offsetHeight+appbar.offsetHeight}px`;
-    console.output("修改页面真实高度\ncontentBG.style.height="+contentBG.style.height);
+    resetDrawerHeight();
   });
-  imgElement.addEventListener("error",()=>{/*图片加载出错则更换为错误图片占位符*/
+  imgElement.onerror= ()=>{/*图片加载出错则更换为错误图片占位符*/
     if (imgElement.dataset.status=="error") {
       msg("坏链占位符图片加载错误，请联系站长处理","好",true);
       console.warn("错误：无法加载图片加载错误占位符图片。\n conf_img_error_replace="+conf_img_error_replace);
@@ -505,64 +589,67 @@ document.querySelectorAll('img').forEach((imgElement) => {
     imgElement.dataset.originSrc=imgElement.src;
     imgElement.src=conf_img_error_replace;
     console.output("某个图片加载失败\nsrc="+imgElement.src);
-  });
+  };
   /*添加文档流图片点击后放大事件*/
-  /*存废行 if (!conf_imgView) {return;};
-  if (imgElement.dataset.uiImg=="true") {return;};*/
   imgElement.classList.add("processed");
   if (conf_imgView_imgse) {
     imgElement.addEventListener("click",function (){
-      openImgView(imgElement.src.replace(/\.md\./,"."),imgElement.title,imgElement.alt,imgElement.dataset.originSrc,this);
+      openImgView(imgElement.dataset.originSrc.replace(/\.md\./,"."),imgElement.title,imgElement.alt,imgElement.dataset.originSrc,imgElement);
     });
   } else {
     imgElement.addEventListener("click",function(){
-      openImgView(imgElement.src,imgElement.title,imgElement.alt,imgElement.dataset.originSrc,this);
+      openImgView(imgElement.dataset.originSrc,imgElement.title,imgElement.alt,imgElement.dataset.originSrc,imgElement);
     });
   };
   console.output("向img添加了imgView绑定");
 });
 function openImgView(imgsrc, imgTitle, imgAlt, originSrc, imgElement) {
   /*以指定uri打开imgView*/
-  if (/*如果图片加载失败不再继续使用当前src*/imgElement.dataset.status == "error") {
+  img_dialog_img.onload=null;
+  img_dialog_img.onerror=null;
+  if (/*如果图片加载失败不再继续使用当前src*/imgElement.dataset.status == "error"
+      ) {
     /*不再继续打开图片，而是重新加载图片*/
     imgElement.dataset.status="reloading";
     imgElement.src=originSrc;
     console.output("尝试重新加载出错图片\nOriginSrc="+originSrc);
-    contentBG.style.height=`${contentBG.offsetHeight+appbar.offsetHeight}px`;
-    console.output("修改页面真实高度\ncontentBG.style.height="+contentBG.style.height);
+    resetDrawerHeight();
     /*提示好像不是很好，ban了先 
     if (!conf_imgView||(imgElement.dataset.uiImg=="true")) {return;};
     msg("此图片加载失败，正在重新加载……","好",true);*/
-    return;
   };
-  if (
+  if (!(
     /*配置文件中未启用查看大图时直接取消后续执行*/!conf_imgView
     /*是UI图片也取消执行*/||(imgElement.dataset.uiImg=="true")
-  ) {return;};
-  img_dialog_img.src=imgsrc;
-  let imgFileName=imgsrc.split("/").pop().split("\\").pop();
-  if (!imgTitle) {
-    img_dialog_p.innerHTML=`<b><big class="selectable">${imgFileName}</big></b><br>`;
-  } else {
-    img_dialog_p.innerHTML=`<b><big class="selectable">${imgTitle}</big></b><br><small>${imgFileName} | </small>`;
-  }
-  let imgInfo="";
-  img_dialog_img.onload=function() {
-    imgInfo=img_dialog_img.naturalHeight+`×`+img_dialog_img.naturalWidth;
-    img_dialog_p.innerHTML+=`<small>${imgInfo} | 以<a href="${conf_licen_link}">${conf_licen}</a>协议提供</small><br><p class="selectable">${imgAlt}</p>`;
-    console.output("imgView被打开\nimgsrc="+imgsrc+"\nimgFileName="+imgFileName+"\nimgTitle="+imgTitle+"\nimgInfo="+imgInfo);
+  )) {
+    img_dialog_img.src=imgsrc;
+    img_dialog_img.dataset.originSrc=imgsrc;
+    let imgFileName=imgsrc.split("/").pop().split("\\").pop();
+    if (!imgTitle) {
+      img_dialog_p.innerHTML=`<b><big class="selectable">${imgFileName}</big></b><br>`;
+    } else {
+      img_dialog_p.innerHTML=`<b><big class="selectable">${imgTitle}</big></b><br><small>${imgFileName} | </small>`;
+    }
+    let imgInfo="";
+    img_dialog_img.onload=function() {
+      imgInfo=img_dialog_img.naturalHeight+`×`+img_dialog_img.naturalWidth;
+      img_dialog_p.innerHTML+=`<small>${imgInfo} | 以<a href="${conf_licen_link}">${conf_licen}</a>协议提供</small><br><p class="selectable">${imgAlt}</p>`;
+      console.output("imgView被打开\nimgsrc="+imgsrc+"\nimgFileName="+imgFileName+"\nimgTitle="+imgTitle+"\nimgInfo="+imgInfo);
+    };
+    img_dialog_img.onerror=function() {
+      img_dialog_p.innerHTML+=`<small>无法获取图片信息 | 以<a href="${conf_licen_link}">${conf_licen}</a>协议提供</small><br><p class="selectable">${imgAlt}</p>`;
+      console.output("imgView被打开\nimgsrc="+imgsrc+"\nimgFileName="+imgFileName+"\nimgTitle="+imgTitle+"\nimgInfo= [[获取失败]]");
+      img_dialog_img.onload=null;
+      img_dialog_img.src=conf_img_error_replace;
+    };
+    img_dialog.show();
+    img_dialog.setAttribute("style","");
+    return;
   };
-  img_dialog_img.onerror=function() {
-    img_dialog_p.innerHTML+=`<small>无法获取图片信息 | 以<a href="${conf_licen_link}">${conf_licen}</a>协议提供</small><br><p class="selectable">${imgAlt}</p>`;
-    console.output("imgView被打开\nimgsrc="+imgsrc+"\nimgFileName="+imgFileName+"\nimgTitle="+imgTitle+"\nimgInfo= [[获取失败]]");
-  };
-  img_dialog.show();
-  img_dialog.setAttribute("style","");
 };
 
 //修改Scroll-View到真实高度
-contentBG.style.height=`${contentBG.offsetHeight+appbar.offsetHeight}px`;
-console.output("修改页面真实高度\ncontentBG.style.height="+contentBG.style.height);
+resetDrawerHeight();
 
 //移除old_menu
 if (!!document.getElementById("old_menu")) {document.getElementById("old_menu").remove();};

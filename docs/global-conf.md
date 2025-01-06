@@ -103,6 +103,9 @@ Z</s-chip>
 定义链接右上小箭头应该被替换为什么。
 ### `conf_conf_headerLinkCopyBrn`
 启用后允许点击标题并复制指向该标题的链接。
+### `conf_index`
+启用后用户可以打开右侧边栏以查看文档目录。
+
 ## 文档属性 {#attribute}
 ### `conf_licen`
 设置文档的版权协议。

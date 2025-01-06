@@ -46,7 +46,6 @@ Pages-md-reRender会自动移除id为`old_menu`的控件。<br>
 ### `ui-img`*
 带有此配置的`img`元素不能被点击查看大图。
 
-<script src="https://unpkg.com/sober@0.4.2/dist/sober.min.js"></script><script src="https://kdxiaoyi.top/Pages-md-reRender/res/pmdrr.js"></script>
 
 ### `indexDiv`*
 控件id为`indexDiv`的div元素内容会被替换为目录索引。<br>
@@ -57,3 +56,6 @@ Pages-md-reRender会自动移除id为`old_menu`的控件。<br>
 ```
 
 > 需要启用[`conf_index`全局配置项](./global-conf#conf_index)。
+
+
+<script src="https://unpkg.com/sober@0.4.2/dist/sober.min.js"></script><script src="https://kdxiaoyi.top/Pages-md-reRender/res/pmdrr.js"></script>
