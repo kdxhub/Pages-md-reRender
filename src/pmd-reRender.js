@@ -36,13 +36,14 @@ const   /*仅对含有 ↗ 或 $ 的链接生效*/conf_link_arrow_replace=true;
 const   /*如果链接含有 ฿ 则将其修改为新标签页打开*/conf_link_target_replace=true;
 const   /*外链图标*/conf_link_arrow_icon=`<s-icon class="newWindowOpen"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960"><path d="M200-120q-33 0-56.5-23.5T120-200v-560q0-33 23.5-56.5T200-840h280v80H200v560h560v-280h80v280q0 33-23.5 56.5T760-120H200Zm188-212-56-56 372-372H560v-80h280v280h-80v-144L388-332Z"></path></svg></s-icon>`;
 const /*自定义边栏内容，禁用保持留空*/conf_replaceSidebar=``;
+const /*启用目录统计，高级用法详见文档*/conf_index=true;
 const /*启用目录索引侧栏*/conf_index_sidebar=true;
-const /*没做好启用无效 | 启用目录统计，高级用法详见文档*/conf_index=true;
 const /*没做好启用无效 | 在标题的最后添加一个按钮以复制链接指向这个标题*/conf_headerLinkCopyBtn=true;
 const /*在页面底端增加文章脚注，为空不额外添加*/conf_footer=``;
-const /*没做好启用无效 | 在脚注中显示用户访问Cloudflare节点信息，仅限域名经过了CF CDN使用*/conf_footer_cf=``;
+const /*没做好启用无效 | 在脚注中显示用户访问Cloudflare节点信息，仅限域名经过了CF CDN使用*/conf_footer_cf=false;
+const /*检查引用部分高级语法，详见文档*/conf_quotepro=[true,`#1A73E7`,`#FBC116`,`#E23B2E`,`#30C496`];
 
-const /*插件版本（建议不要修改）*/PluginVer=["1.3.0beta1",17];
+const /*插件版本（建议不要修改）*/PluginVer=["1.3.0beta3",17];
 
 //插入重渲染代码
 document.body.innerHTML = `
@@ -119,6 +120,12 @@ document.body.innerHTML = `
       bottom: 5%;
       flex-shrink: 0;
     }
+    blockquote.blockinfo {
+      color: #567482;
+    }
+    blockquote.blockinfo p:nth-of-type(2) {
+      margin: 0 0 0 0;
+    }
   </style>
   <s-page theme="auto" class="page_root" id="page_root">
     <s-dialog style="display:none;" id="img_dialog" size="full">
@@ -182,6 +189,7 @@ document.body.innerHTML = `
   </s-page>
 `;
 // 变量、常量定义区
+const hexReg/*匹配Hex颜色代码的正则*/=/\[#(?:[0-9a-f]{3}){1,2}\]/i;
 const page_root/*页面根元素<s-page>*/=document.getElementById("page_root");
 const UIt/*UItitle控件*/=document.getElementById("UIt");
 const link_a/*新建的白板链接元素*/=document.createElement("a");
@@ -313,6 +321,60 @@ function refreshAppbar() {
 };
 contentScroll.addEventListener("scroll", refreshAppbar);
 
+//blockquote高级语法
+if (conf_quotepro[0]) {
+  let quoteproReg = /\[(?:@|！|!|i|x|#(?:[0-9a-f]{3}){1,2})\]/i;
+  document.querySelectorAll('blockquote').forEach((QuoteElement) => {
+    if (quoteproReg.test(QuoteElement.innerHTML)) {
+      console.output(`找到一处使用了高级语法的blockquote`);
+      /*判断此语法是否被转义*/
+      let QuoteMatch=QuoteElement.innerHTML.match(quoteproReg);
+      let QuoteMatch_prefix=``;
+      if (QuoteMatch.index > 0) {QuoteMatch_prefix=QuoteElement.innerHTML[QuoteMatch.index-1]};
+      if (QuoteMatch_prefix == `^`) {
+        console.log(`此blockquote高级语法已被转义`);
+        QuoteElement.innerHTML = QuoteElement.innerHTML.slice(0,QuoteMatch.index-1)+QuoteElement.innerHTML.slice(QuoteMatch.index);
+        return;
+      };
+      /*开始处理语法*/
+      QuoteElement.classList.add("blockinfo");
+      if (/\[i\]/.test(QuoteElement.innerHTML)) {
+        QuoteElement.style.borderLeftColor=conf_quotepro[1];
+        QuoteElement.innerHTML = 
+          `<p style="color: ${conf_quotepro[1]};margin: 0 0 .3em -.3em;font-size: 1.1em">
+          <s-icon style="color: ${conf_quotepro[1]};height: 1.2em;vertical-align: center;"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960"><path d="M440-280h80v-240h-80v240Zm40-320q17 0 28.5-11.5T520-640q0-17-11.5-28.5T480-680q-17 0-28.5 11.5T440-640q0 17 11.5 28.5T480-600Zm0 520q-83 0-156-31.5T197-197q-54-54-85.5-127T80-480q0-83 31.5-156T197-763q54-54 127-85.5T480-880q83 0 156 31.5T763-763q54 54 85.5 127T880-480q0 83-31.5 156T763-197q-54 54-127 85.5T480-80Zm0-80q134 0 227-93t93-227q0-134-93-227t-227-93q-134 0-227 93t-93 227q0 134 93 227t227 93Zm0-320Z"></path></svg>
+          </s-icon> Info</p>`+QuoteElement.innerHTML;
+      };
+      if (/\[(!|！)\]/.test(QuoteElement.innerHTML)) {
+        QuoteElement.style.borderLeftColor=conf_quotepro[2];
+        QuoteElement.innerHTML = 
+          `<p style="color: ${conf_quotepro[2]};margin: 0 0 .3em -.3em;font-size: 1.1em">
+          <s-icon style="color: ${conf_quotepro[2]};height: 1.2em;vertical-align: center;"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960"><path d="M480-280q17 0 28.5-11.5T520-320q0-17-11.5-28.5T480-360q-17 0-28.5 11.5T440-320q0 17 11.5 28.5T480-280Zm-40-160h80v-240h-80v240Zm40 360q-83 0-156-31.5T197-197q-54-54-85.5-127T80-480q0-83 31.5-156T197-763q54-54 127-85.5T480-880q83 0 156 31.5T763-763q54 54 85.5 127T880-480q0 83-31.5 156T763-197q-54 54-127 85.5T480-80Zm0-80q134 0 227-93t93-227q0-134-93-227t-227-93q-134 0-227 93t-93 227q0 134 93 227t227 93Zm0-320Z"></path></svg>
+          </s-icon> Notice</p>`+QuoteElement.innerHTML;
+      };
+      if (/\[x\]/.test(QuoteElement.innerHTML)) {
+        QuoteElement.style.borderLeftColor=conf_quotepro[3];
+        QuoteElement.innerHTML = 
+          `<p style="color: ${conf_quotepro[3]};margin: 0 0 .3em -.3em;font-size: 1.1em">
+          <s-icon style="color: ${conf_quotepro[3]};height: 1.2em;vertical-align: center;"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960"><path d="m40-120 440-760 440 760H40Zm138-80h604L480-720 178-200Zm302-40q17 0 28.5-11.5T520-280q0-17-11.5-28.5T480-320q-17 0-28.5 11.5T440-280q0 17 11.5 28.5T480-240Zm-40-120h80v-200h-80v200Zm40-100Z"></path></svg>
+          </s-icon> Warn</p>`+QuoteElement.innerHTML;
+      };
+      if (/\[@\]/.test(QuoteElement.innerHTML)) {
+        QuoteElement.style.borderLeftColor=conf_quotepro[4];
+        QuoteElement.innerHTML = 
+          `<p style="color: ${conf_quotepro[4]};margin: 0 0 .3em -.3em;font-size: 1.1em">
+          <s-icon style="color: ${conf_quotepro[4]};height: 1.2em;vertical-align: center;"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960"><path d="M480-80q-83 0-156-31.5T197-197q-54-54-85.5-127T80-480q0-83 31.5-156T197-763q54-54 127-85.5T480-880q65 0 123 19t107 53l-58 59q-38-24-81-37.5T480-800q-133 0-226.5 93.5T160-480q0 133 93.5 226.5T480-160q133 0 226.5-93.5T800-480q0-18-2-36t-6-35l65-65q11 32 17 66t6 70q0 83-31.5 156T763-197q-54 54-127 85.5T480-80Zm-56-216L254-466l56-56 114 114 400-401 56 56-456 457Z"></path></svg>
+          </s-icon> Tip</p>`+QuoteElement.innerHTML;
+      };
+      if (hexReg.test(QuoteElement.innerHTML)) {
+        QuoteElement.style.borderLeftColor=
+          QuoteElement.innerHTML.match(hexReg)[0].replace(/\[/,"").replace(/\]/,"");
+      };
+      QuoteElement.innerHTML = QuoteElement.innerHTML.replace(quoteproReg,"");
+    };
+  });
+};
+
 //侧栏内容覆写
 if (!!conf_replaceSidebar) {
   document.getElementById("sidebar_left").innerHTML=conf_replaceSidebar;
@@ -341,7 +403,7 @@ document.querySelectorAll('div#contentBG h1, div#contentBG h2, div#contentBG h3,
   };
   hn_last_level=hn_level;
 });
-if (conf_index) {
+if (conf_index_sidebar) {
   /*启用后要新增对应的按钮来展开右栏*/
   index_links.innerHTML=hn_index_cache;
   document.getElementById("sidebar_right_toggle_btn").addEventListener("click",()=>{
@@ -350,7 +412,8 @@ if (conf_index) {
     sidebar.dismiss();
     sidebar.toggle("end");
   });
-};
+} else {document.getElementById("sidebar_right_toggle_btn").remove();};
+if /*向具有指定id的元素中写入目录信息*/ (conf_index && !!(document.getElementById("index_overwrite"))) {document.getElementById("index_overwrite").innerHTML=hn_index_cache;};
 
 //读取页面标题
 setUItitle(title.innerHTML);
@@ -453,7 +516,7 @@ if (conf_time[0] && !conf_replaceSidebar) {
 //a元素新增右上箭头，修改打开位置
 if (conf_link_arrow) {
 document.querySelectorAll('a').forEach((aElement) => {
-  if (conf_link_target_replace&&/\u0e3f/.test(aElement.innerHTML)) {aElement.target="_blank";console.log("为a写入了_blank的target属性");};
+  if (conf_link_target_replace&&/\u0e3f/.test(aElement.innerHTML)) {aElement.target="_blank";console.output("为a写入了_blank的target属性");};
   if (conf_link_arrow_replace) {
     aElement.innerHTML=aElement.innerHTML.replace(/[\u2197\u0024\u0e3f]/, conf_link_arrow_icon);
     console.output("为a添加了外链图标 (替换模式)");

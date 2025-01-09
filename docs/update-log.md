@@ -8,6 +8,7 @@ description: "Update Log"
 ## v1.3.0 [17]
 > 目前此版本处在<u>Beta预览</u>中，不代表最终效果。
 
+### beta1
 * \+ imgView新增加载错误点击重试功能
 * \~ imgView现在不会把占位图片作为大图加载了
 * \~ 调整了imgView的最大高度以防止页面过长
@@ -19,6 +20,7 @@ description: "Update Log"
 * \+ 新增redirect页面参数以快速插入重定向页面
 * \- 删除部分折叠代码，并增加对应注释
 
+### beta2
 * ~ 修改`<img>`的`error`事件方法为`onerror`，以修复imgView中的「错误显示占位图片信息」的bug。
 * ~ 修复imgView中的「打开原图会打开占位图片」的bug。
 * ~ 修复imgView中的「点击占位图片会导致图片信息栏异常」的bug。
@@ -28,6 +30,12 @@ description: "Update Log"
 * ~ 将部分重复调用的API写到一起。
 * ~ 修复了章节锚点跳转后Drawer异常布局问题。
 * \- 现在向复制内容添加尾注时不再阻止默认事件触发，以修复在部分浏览器上无法复制内容的问题。
+
+### beta3
+* ~ 重命名仓库中一处错误文件名（`src/pwd-reRender.js`→`src/pmd-reRender.js`）。
+* ~ 修改一处异常的控制台日志输出。
+* \+ 现在目录树会被写入到id为`index_overwrite`的`<div>`元素中，见于[此处](./global_conf#conf_index)。
+* \+ 新增引用块（`<blockquote>`）的高级语法，见于[此处](./global_conf#conf_quotepro)。
 
 ## v1.2.0 [16]
 * \+ 为左侧边栏添加了滚动条以适应高度不够的页面下左边栏内容
