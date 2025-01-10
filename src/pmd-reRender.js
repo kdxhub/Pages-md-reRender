@@ -38,7 +38,7 @@ const   /*外链图标*/conf_link_arrow_icon=`<s-icon class="newWindowOpen"><svg
 const /*自定义边栏内容，禁用保持留空*/conf_replaceSidebar=``;
 const /*启用目录统计，高级用法详见文档*/conf_index=true;
 const /*启用目录索引侧栏*/conf_index_sidebar=true;
-const /*没做好启用无效 | 在标题的最后添加一个按钮以复制链接指向这个标题*/conf_headerLinkCopyBtn=true;
+const /*在标题的最后添加一个按钮以复制链接指向这个标题*/conf_headerLinkCopyBtn=true;
 const /*在页面底端增加文章脚注，为空不额外添加*/conf_footer=``;
 const /*没做好启用无效 | 在脚注中显示用户访问Cloudflare节点信息，仅限域名经过了CF CDN使用*/conf_footer_cf=false;
 const /*检查引用部分高级语法，详见文档*/conf_quotepro=[true,`#1A73E7`,`#FBC116`,`#E23B2E`,`#30C496`];
@@ -159,6 +159,22 @@ document.body.innerHTML = `
       height: .2em;
       border-radius: 50%;
       border: .075em solid var(--s-color-primary, black);
+    }
+    .headerProcessed {
+      text-decoration: none;
+      cursor: alias;
+    }
+    .headerProcessed:hover {
+      text-decoration: underline;
+    }
+    .headerLinkBtn {
+      height: 1rem;
+      width: 1rem;
+      transition: opacity 0.15s ease;
+      opacity: 0;
+    }
+    .headerProcessed:hover > .headerLinkBtn {
+      opacity: 1;
     }
   </style>
   <s-page theme="auto" class="page_root" id="page_root">
@@ -435,6 +451,7 @@ if (!!conf_replaceSidebar) {
 let hn_last_level=1;
 let hn_index_cache="";
 document.querySelectorAll('div#contentBG h1, div#contentBG h2, div#contentBG h3, div#contentBG h4, div#contentBG h5, div#contentBG h6').forEach((HeaderElement) => {
+  HeaderElement.dataset.title = HeaderElement.innerHTML;
   if (HeaderElement.className/*不处理文章开头的副标题*/.includes("project-tagline")) {return;};
   let hn_level=HeaderElement.tagName.replace(/\D/g,"");
   if (!HeaderElement.id) {/*判断标题元素是否有id，若无则写入一个*/
@@ -443,15 +460,27 @@ document.querySelectorAll('div#contentBG h1, div#contentBG h2, div#contentBG h3,
   } else {
     let name=HeaderElement.id;
   };
-  if (conf_headerLinkCopyBtn && !HeaderElement.className/*不处理文章开头的标题*/.includes("project-name")) {
-    
-  };
   if (conf_index) {
     if (hn_level > hn_last_level) /*如果进入下级标题，则需要新建ul*/ {hn_index_cache += `<ul class="index">`.repeat(hn_level-hn_last_level);};
     if (hn_level < hn_last_level) /*如果进入上级标题则结束ul*/ {hn_index_cache += `</ul>`.repeat(hn_last_level-hn_level);};
     hn_index_cache += `<li class="index"><a href="javascript:scrollToHash('${HeaderElement.id}');">${HeaderElement.innerHTML}</a></li>`;
   };
   hn_last_level=hn_level;
+  if (!!navigator.clipboard && conf_headerLinkCopyBtn && !HeaderElement.className/*不处理文章开头的标题*/.includes("project-name")) {
+    HeaderElement.addEventListener("click", () => {
+      navigator.clipboard.writeText(`${window.location.href.replace(window.location.hash,"").slice(0,-1)}#${HeaderElement.id}`).then(
+        function () {/* clipboard successfully set */
+          msg(`已复制指向标题「${HeaderElement.dataset.title}」的链接`, "好");
+          console.output("Clipboard API返回「✓已写入剪贴板」");
+        },function () {/* clipboard write failed */
+          msg("没有授予剪贴板权限…", "好", true);
+          console.output("Clipboard API返回「×无法写入剪贴板」");
+        },
+      );
+    });
+    HeaderElement.classList.add("headerProcessed");
+    HeaderElement.innerHTML+=`<s-icon class="headerLinkBtn"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960"><path d="M680-160v-120H560v-80h120v-120h80v120h120v80H760v120h-80ZM440-280H280q-83 0-141.5-58.5T80-480q0-83 58.5-141.5T280-680h160v80H280q-50 0-85 35t-35 85q0 50 35 85t85 35h160v80ZM320-440v-80h320v80H320Zm560-40h-80q0-50-35-85t-85-35H520v-80h160q83 0 141.5 58.5T880-480Z"></path></svg></s-icon>`;
+  };
 });
 if (conf_index_sidebar) {
   index_links.innerHTML=hn_index_cache;
@@ -482,8 +511,10 @@ window.addEventListener('hashchange', () => {
   /*更新UItitle透明度*/
   UIt.style.opacity=contentScroll.scrollTop/title_height;
   /*修复章节锚点跳转页面底部时导致布局异常bug*/
-  refreshDrawer();
-  refreshAppbar();
+  setTimeout(() => {
+    refreshDrawer();
+    refreshAppbar();
+  },2);
 });
 
 //检查页面设置元素并应用
