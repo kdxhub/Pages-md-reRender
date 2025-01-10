@@ -138,6 +138,28 @@ document.body.innerHTML = `
     blockquote.blockinfo p:first-of-type {
       margin-top: .2em;
     }
+    ul#index_links {
+      padding: 0 0 0 0;
+      margin: 0 0 0 1.2em;
+      wdith:100%;
+      list-style-type: none;
+    }
+    ul.index {
+      padding: 0 0 0 .8em;
+      list-style-type: none;
+    }
+    li.index {
+      padding: 0 0 0 0;
+    }
+    ul.index li.index::before {
+      content: "";
+      position: absolute;
+      transform: translateY(.6em) translateX(-.75em);
+      width: .2em;
+      height: .2em;
+      border-radius: 50%;
+      border: .075em solid var(--s-color-primary, black);
+    }
   </style>
   <s-page theme="auto" class="page_root" id="page_root">
     <s-dialog style="display:none;" id="img_dialog" size="full">
@@ -160,7 +182,7 @@ document.body.innerHTML = `
     </s-appbar>
     <s-drawer id="sidebar">
       <div id="sidebar_left_parent" slot="start">
-        <s-scroll-view style="max-height:100%;">
+        <s-scroll-view id="sidebar_left_scroll" style="max-height:100%;">
           <div id="sidebar_left" class="sidebar_drawer">
           <!--左侧边栏内容-->
             <s-card type="" class="sidebar_head">
@@ -168,6 +190,15 @@ document.body.innerHTML = `
               <div slot="headline"><span class='sidebar_username_bg'>${conf_sidebar_headimg_alt}</span></div>
             </s-card><br>
             <s-card type="" class="sidebar_head">${conf_sidebar_links}</s-card><br>
+            <s-card type="" class="sidebar_head" id="index_links_sidebarSlot" style="display:none;">
+              <s-fold folded="true">
+                <s-chip slot="trigger" clickable="true" class="sidebar_btn">
+                  <s-icon slot="start"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960"><path d="M240-80q-50 0-85-35t-35-85v-560q0-50 35-85t85-35h440v640H240q-17 0-28.5 11.5T200-200q0 17 11.5 28.5T240-160h520v-640h80v720H240Zm120-240h240v-480H360v480Zm-80 0v-480h-40q-17 0-28.5 11.5T200-760v447q10-3 19.5-5t20.5-2h40Zm-80-480v487-487Z"></path></svg></s-icon>
+                  目录
+                </s-chip>
+                <div id="index_links_parent"><ul id="index_links"></ul></div>
+              </s-fold>
+            </s-card><br>
             <s-card type="" class="sidebar_head">
               <div id="saying" class="selectable"><center>${conf_saying}</center></div>
               <div id="time"><center><small>Since 2022-07-19</small></center></div>
@@ -180,18 +211,11 @@ document.body.innerHTML = `
         <s-scroll-view style="max-height:100%;">
           <div id="sidebar_right" class="sidebar_drawer">
           <!--右侧边栏内容-->
-            <div id="index_links_parent"><ul id="index_links"></ul></div>
           </div>
         </s-scroll-view>
       </div>
       <div>
         <s-scroll-view id="contentScroll" style="max-height:100%;"><div id="contentBG" class="selectable">
-        <s-tooltip style="pointer-events:auto;">
-          <s-fab id="sidebar_right_toggle_btn" slot="trigger">
-            <s-icon><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960"><path d="M560-564v-68q33-14 67.5-21t72.5-7q26 0 51 4t49 10v64q-24-9-48.5-13.5T700-600q-38 0-73 9.5T560-564Zm0 220v-68q33-14 67.5-21t72.5-7q26 0 51 4t49 10v64q-24-9-48.5-13.5T700-380q-38 0-73 9t-67 27Zm0-110v-68q33-14 67.5-21t72.5-7q26 0 51 4t49 10v64q-24-9-48.5-13.5T700-490q-38 0-73 9.5T560-454ZM260-320q47 0 91.5 10.5T440-278v-394q-41-24-87-36t-93-12q-36 0-71.5 7T120-692v396q35-12 69.5-18t70.5-6Zm260 42q44-21 88.5-31.5T700-320q36 0 70.5 6t69.5 18v-396q-33-14-68.5-21t-71.5-7q-47 0-93 12t-87 36v394Zm-40 118q-48-38-104-59t-116-21q-42 0-82.5 11T100-198q-21 11-40.5-1T40-234v-482q0-11 5.5-21T62-752q46-24 96-36t102-12q58 0 113.5 15T480-740q51-30 106.5-45T700-800q52 0 102 12t96 36q11 5 16.5 15t5.5 21v482q0 23-19.5 35t-40.5 1q-37-20-77.5-31T700-240q-60 0-116 21t-104 59ZM280-494Z"></path></svg></s-icon>
-          </s-fab>
-          查看目录
-        </s-tooltip>
   <!-- 页面重渲染插入代码结束 -->
   `+document.body.innerHTML+`
         <footer class="site-footer unselectable"></hr>${conf_footer}<br><small>Powered by <a href="http://github.com/kdxhub/Pages-md-reRender" target="_blank">kdxiaoyi/Pages-md-reRender</a>.</small></footer>
@@ -219,6 +243,7 @@ const img_dialog_img/*查看大图UI中的图片元素*/=document.getElementById
 const img_dialog_p/*查看大图UI中文本描述元素*/=document.getElementById("img_dialog_p");
 const sidebar/*抽屉边栏总框架元素*/=document.getElementById("sidebar");
 const drawer_left/*左边栏框架元素*/=document.getElementById("sidebar_left");
+const drawer_left_scroll/*左边栏框架元素*/=document.getElementById("sidebar_left_scroll");
 const drawer_left_parent/*左边栏框架父元素*/=document.getElementById("sidebar_left_parent");
 const drawer_right/*右边栏框架元素*/=document.getElementById("sidebar_right");
 const drawer_right_parent/*右边栏框架父元素*/=document.getElementById("sidebar_right_parent");
@@ -271,7 +296,9 @@ function refreshDrawer() {
   }, 10);
 };
 function scrollToTop() {
-  /*关闭所有侧栏*/sidebar.dismiss("end");sidebar.dismiss();
+  /*关闭所有侧栏*/
+  sidebar.dismiss("end");
+  sidebar.dismiss();
   /*回顶自动清除章节锚点*/
   window.location.hash = "";
   /*计算回顶速度并创建回顶循环*/
@@ -280,7 +307,12 @@ function scrollToTop() {
   toTop_intervalID = setInterval(() => {
     contentScroll.scrollBy(0,toTop_interval_speed);
     console.output("回顶循环#"+toTop_intervalID+"执行操作");
-    if (contentScroll.scrollTop <= 0) {clearInterval(toTop_intervalID);console.output("回顶循环#"+toTop_intervalID+"操作完成");toTop_intervalID=-1;};
+    if (contentScroll.scrollTop <= 0) {
+      clearInterval(toTop_intervalID);
+      console.output("回顶循环#"+toTop_intervalID+"操作完成");
+      toTop_intervalID=-1;
+      drawer_left_scroll.scrollTop=0;
+    };
   }, 1);
   console.output("创建新的回顶循环句柄#"+toTop_intervalID);
 };
@@ -415,22 +447,16 @@ document.querySelectorAll('div#contentBG h1, div#contentBG h2, div#contentBG h3,
     
   };
   if (conf_index) {
-    if (hn_level > hn_last_level) /*如果进入下级标题，则需要新建ul*/ {hn_index_cache += `<ul>`.repeat(hn_level-hn_last_level);};
+    if (hn_level > hn_last_level) /*如果进入下级标题，则需要新建ul*/ {hn_index_cache += `<ul class="index">`.repeat(hn_level-hn_last_level);};
     if (hn_level < hn_last_level) /*如果进入上级标题则结束ul*/ {hn_index_cache += `</ul>`.repeat(hn_last_level-hn_level);};
-    hn_index_cache += `<li><a href="javascript:scrollToHash('${HeaderElement.id}');">${HeaderElement.innerHTML}</a></li>`;
+    hn_index_cache += `<li class="index"><a href="javascript:scrollToHash('${HeaderElement.id}');">${HeaderElement.innerHTML}</a></li>`;
   };
   hn_last_level=hn_level;
 });
 if (conf_index_sidebar) {
-  /*启用后要新增对应的按钮来展开右栏*/
   index_links.innerHTML=hn_index_cache;
-  document.getElementById("sidebar_right_toggle_btn").addEventListener("click",()=>{
-    if (toTop_intervalID !== -1) /*有存在的回顶循环时不能展开菜单*/ {return;};
-    window.getSelection().removeAllRanges();
-    sidebar.dismiss();
-    sidebar.toggle("end");
-  });
-} else {document.getElementById("sidebar_right_toggle_btn").remove();};
+  document.getElementById("index_links_sidebarSlot").style="";
+};
 if /*向具有指定id的元素中写入目录信息*/ (conf_index && !!(document.getElementById("index_overwrite"))) {document.getElementById("index_overwrite").innerHTML=hn_index_cache;};
 
 //读取页面标题

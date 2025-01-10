@@ -36,6 +36,7 @@ description: "Update Log"
 * ~ 修改一处异常的控制台日志输出。
 * \+ 现在目录树会被写入到id为`index_overwrite`的`<div>`元素中，见于[此处](./global_conf#conf_index)。
 * \+ 新增引用块（`<blockquote>`）的高级语法，见于[此处](./global_conf#conf_quotepro)。
+* ~ 优化目录板块表现
 
 ## v1.2.0 [16]
 * \+ 为左侧边栏添加了滚动条以适应高度不够的页面下左边栏内容
