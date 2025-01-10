@@ -40,10 +40,9 @@ const /*启用目录统计，高级用法详见文档*/conf_index=true;
 const /*启用目录索引侧栏*/conf_index_sidebar=true;
 const /*在标题的最后添加一个按钮以复制链接指向这个标题*/conf_headerLinkCopyBtn=true;
 const /*在页面底端增加文章脚注，为空不额外添加*/conf_footer=``;
-const /*没做好启用无效 | 在脚注中显示用户访问Cloudflare节点信息，仅限域名经过了CF CDN使用*/conf_footer_cf=false;
 const /*检查引用部分高级语法，详见文档*/conf_quotepro=[true,`#1A73E7`,`#FBC116`,`#E23B2E`,`#30C496`];
 
-const /*插件版本（建议不要修改）*/PluginVer=["1.3.0beta3",17];
+const /*插件版本（建议不要修改）*/PluginVer=["1.3.0",17];
 
 //插入重渲染代码
 document.body.innerHTML = `
