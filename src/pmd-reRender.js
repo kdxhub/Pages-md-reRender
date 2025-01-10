@@ -122,9 +122,21 @@ document.body.innerHTML = `
     }
     blockquote.blockinfo {
       color: #567482;
+      width: 100%;
+      border-style: solid;
     }
     blockquote.blockinfo p:nth-of-type(2) {
       margin: 0 0 0 0;
+    }
+    blockquote.blockinfo p:last-of-type {
+      margin-bottom: .3em;
+    }
+    blockquote.blockinfo > p.blockinfo {
+      margin: .2em 0 .2em -.3em;
+      font-size: 1.1em;
+    }
+    blockquote.blockinfo p:first-of-type {
+      margin-top: .2em;
     }
   </style>
   <s-page theme="auto" class="page_root" id="page_root">
@@ -189,7 +201,7 @@ document.body.innerHTML = `
   </s-page>
 `;
 // 变量、常量定义区
-const hexReg/*匹配Hex颜色代码的正则*/=/\[#(?:[0-9a-f]{3}){1,2}\]/i;
+const hexReg/*匹配Hex颜色代码的正则*/=/#(?:[0-9a-f]{3}){1,2}/i;
 const page_root/*页面根元素<s-page>*/=document.getElementById("page_root");
 const UIt/*UItitle控件*/=document.getElementById("UIt");
 const link_a/*新建的白板链接元素*/=document.createElement("a");
@@ -323,7 +335,7 @@ contentScroll.addEventListener("scroll", refreshAppbar);
 
 //blockquote高级语法
 if (conf_quotepro[0]) {
-  let quoteproReg = /\[(?:@|！|!|i|x|#(?:[0-9a-f]{3}){1,2})\]/i;
+  let quoteproReg = /\[(?:@|！|!|i|x|#(?:[0-9a-f]{3}){1,2}(\$[\s\S]*)*)\]/i;
   document.querySelectorAll('blockquote').forEach((QuoteElement) => {
     if (quoteproReg.test(QuoteElement.innerHTML)) {
       console.output(`找到一处使用了高级语法的blockquote`);
@@ -339,36 +351,42 @@ if (conf_quotepro[0]) {
       /*开始处理语法*/
       QuoteElement.classList.add("blockinfo");
       if (/\[i\]/.test(QuoteElement.innerHTML)) {
-        QuoteElement.style.borderLeftColor=conf_quotepro[1];
+        QuoteElement.style.borderColor=conf_quotepro[1];
         QuoteElement.innerHTML = 
-          `<p style="color: ${conf_quotepro[1]};margin: 0 0 .3em -.3em;font-size: 1.1em">
+          `<p class="blockinfo" style="color: ${conf_quotepro[1]};">
           <s-icon style="color: ${conf_quotepro[1]};height: 1.2em;vertical-align: center;"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960"><path d="M440-280h80v-240h-80v240Zm40-320q17 0 28.5-11.5T520-640q0-17-11.5-28.5T480-680q-17 0-28.5 11.5T440-640q0 17 11.5 28.5T480-600Zm0 520q-83 0-156-31.5T197-197q-54-54-85.5-127T80-480q0-83 31.5-156T197-763q54-54 127-85.5T480-880q83 0 156 31.5T763-763q54 54 85.5 127T880-480q0 83-31.5 156T763-197q-54 54-127 85.5T480-80Zm0-80q134 0 227-93t93-227q0-134-93-227t-227-93q-134 0-227 93t-93 227q0 134 93 227t227 93Zm0-320Z"></path></svg>
           </s-icon> Info</p>`+QuoteElement.innerHTML;
       };
       if (/\[(!|！)\]/.test(QuoteElement.innerHTML)) {
-        QuoteElement.style.borderLeftColor=conf_quotepro[2];
+        QuoteElement.style.borderColor=conf_quotepro[2];
         QuoteElement.innerHTML = 
-          `<p style="color: ${conf_quotepro[2]};margin: 0 0 .3em -.3em;font-size: 1.1em">
+          `<p class="blockinfo" style="color: ${conf_quotepro[2]};">
           <s-icon style="color: ${conf_quotepro[2]};height: 1.2em;vertical-align: center;"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960"><path d="M480-280q17 0 28.5-11.5T520-320q0-17-11.5-28.5T480-360q-17 0-28.5 11.5T440-320q0 17 11.5 28.5T480-280Zm-40-160h80v-240h-80v240Zm40 360q-83 0-156-31.5T197-197q-54-54-85.5-127T80-480q0-83 31.5-156T197-763q54-54 127-85.5T480-880q83 0 156 31.5T763-763q54 54 85.5 127T880-480q0 83-31.5 156T763-197q-54 54-127 85.5T480-80Zm0-80q134 0 227-93t93-227q0-134-93-227t-227-93q-134 0-227 93t-93 227q0 134 93 227t227 93Zm0-320Z"></path></svg>
           </s-icon> Notice</p>`+QuoteElement.innerHTML;
       };
       if (/\[x\]/.test(QuoteElement.innerHTML)) {
-        QuoteElement.style.borderLeftColor=conf_quotepro[3];
+        QuoteElement.style.borderColor=conf_quotepro[3];
         QuoteElement.innerHTML = 
-          `<p style="color: ${conf_quotepro[3]};margin: 0 0 .3em -.3em;font-size: 1.1em">
+          `<p class="blockinfo" style="color: ${conf_quotepro[3]};">
           <s-icon style="color: ${conf_quotepro[3]};height: 1.2em;vertical-align: center;"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960"><path d="m40-120 440-760 440 760H40Zm138-80h604L480-720 178-200Zm302-40q17 0 28.5-11.5T520-280q0-17-11.5-28.5T480-320q-17 0-28.5 11.5T440-280q0 17 11.5 28.5T480-240Zm-40-120h80v-200h-80v200Zm40-100Z"></path></svg>
           </s-icon> Warn</p>`+QuoteElement.innerHTML;
       };
       if (/\[@\]/.test(QuoteElement.innerHTML)) {
-        QuoteElement.style.borderLeftColor=conf_quotepro[4];
+        QuoteElement.style.borderColor=conf_quotepro[4];
         QuoteElement.innerHTML = 
-          `<p style="color: ${conf_quotepro[4]};margin: 0 0 .3em -.3em;font-size: 1.1em">
+          `<p class="blockinfo" style="color: ${conf_quotepro[4]};">
           <s-icon style="color: ${conf_quotepro[4]};height: 1.2em;vertical-align: center;"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960"><path d="M480-80q-83 0-156-31.5T197-197q-54-54-85.5-127T80-480q0-83 31.5-156T197-763q54-54 127-85.5T480-880q65 0 123 19t107 53l-58 59q-38-24-81-37.5T480-800q-133 0-226.5 93.5T160-480q0 133 93.5 226.5T480-160q133 0 226.5-93.5T800-480q0-18-2-36t-6-35l65-65q11 32 17 66t6 70q0 83-31.5 156T763-197q-54 54-127 85.5T480-80Zm-56-216L254-466l56-56 114 114 400-401 56 56-456 457Z"></path></svg>
           </s-icon> Tip</p>`+QuoteElement.innerHTML;
       };
-      if (hexReg.test(QuoteElement.innerHTML)) {
-        QuoteElement.style.borderLeftColor=
-          QuoteElement.innerHTML.match(hexReg)[0].replace(/\[/,"").replace(/\]/,"");
+      let hexSReg=/\[#(?:[0-9a-f]{3}){1,2}(\$[\s\S]*)*\]/i;
+      if (hexSReg.test(QuoteElement.innerHTML)) {
+        let borderColor= 
+          QuoteElement.innerHTML.match(hexSReg)[0].match(hexReg)[0];
+        let borderTip=
+          QuoteElement.innerHTML.match(hexSReg)[0].match(/(\$[\s\S]*)*/g).join("").replace(/\$/,"").slice(0,-1);
+        QuoteElement.style.borderColor= borderColor;
+        QuoteElement.innerHTML = 
+          `<p class="blockinfo" style="color: ${borderColor};">${borderTip}</p>`+QuoteElement.innerHTML;
       };
       QuoteElement.innerHTML = QuoteElement.innerHTML.replace(quoteproReg,"");
     };

@@ -17,7 +17,7 @@ Pages-md-reRender出于尽可能的轻便化目的，将全部的通用配置项
 其单元块是这样的：
 ```html
 <s-chip id="side_ship_X" onclick="openURL('Y')" clickable="true" class="sidebar_btn">
-<s-icon slot="start">插入SVG矢量图片</s-icon>
+  <s-icon slot="start">插入SVG矢量图片</s-icon>
 Z</s-chip>
 ```
 
@@ -63,7 +63,8 @@ Z</s-chip>
 * `!`：注意（Notice）块，默认渲染为黄色。
 * `x`：警告（Warn）块，默认渲染为红色。
 * `@`：提示（Tip）块，默认渲染为绿色。
-* 特殊的：`#xxxxxx`：渲染为指定的Hex颜色代码。
+* 特殊的：`#xxxxxx`：渲染为指定的Hex颜色代码，允许简写。
+* * 也可以写为`#xxxxxx$title`，这会将`$`后面的title设置为这一块的标题。
 
 如果您需要临时禁用此语法，那么需要在`[`前方加上一个`^`字符：`> ^[x]`。
 
