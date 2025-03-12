@@ -40,8 +40,8 @@ const conf = {
     background: {
       /*背景图片（自动应用不透明遮罩）*/
       src: "https://s21.ax1x.com/2024/05/24/pkQwAte.jpg",
-      /*背景图片遮罩透明度，范围0~1*/
-      a: 0.8,
+      /*背景图片遮罩透明度，分别为亮色和暗色遮罩，范围0~1*/
+      alpha: [0.8, 0.82],
       /*背景图片模糊度，为-1禁用*/
       blur: -1,
     },
@@ -151,7 +151,7 @@ document.body.innerHTML = `
       background: url(${conf.img.background.src});
     }
     #_pmd-pageRoot {
-      background: rgba(250,253,252,${conf.img.background.a});
+      background: rgba(250,253,252,${conf.img.background.alpha[0]});
       backdrop-filter: blur(${conf.img.background.blur}px);
     }
     .sidebar_username_bg {
@@ -163,7 +163,7 @@ document.body.innerHTML = `
       background: url(${conf.img.background.src});
     }
     #_pmd-pageRoot {
-      background: rgba(250,253,252,${conf.img.background.a});
+      background: rgba(250,253,252,${conf.img.background.alpha[1]});
       backdrop-filter: blur(${conf.img.background.blur}px);
     }
     * {
