@@ -37,6 +37,14 @@ const conf = {
     },
     /*图片加载失败后的占位符图片*/
     error: "https://rs.kdxiaoyi.top/res/images/load_err.svg",
+    background: {
+      /*背景图片（自动应用不透明遮罩）*/
+      src: "https://s21.ax1x.com/2024/05/24/pkQwAte.jpg",
+      /*背景图片遮罩透明度，范围0~1*/
+      a: 0.8,
+      /*背景图片模糊度，为-1禁用*/
+      blur: -1,
+    },
   },
   sidebar: {
     solt_1: {
@@ -131,15 +139,53 @@ document.body.innerHTML = `
     padding: 3px 3px 3px 3px;
     margin-bottom: 3%;
   }
-  .page_root {
-    width:100%;height:100%;
-  }
   html::-webkit-scrollbar {
     width: 0;
    height: 0;
   }
   html {
     scrollbar-width: none;
+  }
+  @media not (prefers-color-scheme: dark) {
+    body {
+      background: url(${conf.img.background.src});
+    }
+    #_pmd-pageRoot {
+      background: rgba(250,253,252,${conf.img.background.a});
+      backdrop-filter: blur(${conf.img.background.blur}px);
+    }
+    .sidebar_username_bg {
+    background:rgba(250,253,252,0.5);
+    }
+  }
+  @media (prefers-color-scheme: dark) {
+    body {
+      background: url(${conf.img.background.src});
+    }
+    #_pmd-pageRoot {
+      background: rgba(250,253,252,${conf.img.background.a});
+      backdrop-filter: blur(${conf.img.background.blur}px);
+    }
+    * {
+      color-scheme:dark;
+    }
+    .sidebar_username_bg {
+      background:rgba(5,2,3,0.5);
+    }
+    pre {
+      --pre-bg-color:rbg(25 26 28);
+    }
+    .page-header {
+      --header-font-color: #f8f8f8;
+    }
+  }
+  body {
+    background-repeat: no-repeat;
+    background-size: cover;
+    -webkit-background-size: cover;
+    -o-background-size: cover;
+    background-position: center 0;
+    background-attachment: fixed;
   }
 </style>
 <s-page id="_pmd-pageRoot" theme="auto">
