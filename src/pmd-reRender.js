@@ -101,115 +101,153 @@ conf.copy.endnote = ` ‖ 来自[%ETITLE%](%LINK%)，以${conf.info.licen.what}�
 const /*插件版本（建议不要修改）*/PluginVer=["2.0.0",18];
 
 document.body.innerHTML = `
-  <!-- Pages Markdown Re-Render -->
-  <!-- 页面重渲染插入代码开始 -->
-  <style>
-    @keyframes fadeIn {
-      from {opacity: 0;}
-      to {opacity: 1;}
-      }
-    .fadeIn {
-      animation-duration: 0.5s;
-      animation-fill-mode: both;
-      animation-name: fadeIn;
+<!-- Pages Markdown Re-Render -->
+<!-- 页面重渲染插入代码开始 -->
+<style>
+  @keyframes fadeIn {
+    from {opacity: 0;}
+    to {opacity: 1;}
     }
-    @keyframes fadeOut {
-      from {opacity: 1;}
-      to {opacity: 0;}
-      }
-    .fadeOut {
-      animation-duration: 0.5s;
-      animation-fill-mode: both;
-      animation-name: fadeOut;
+  .fadeIn {
+    animation-duration: 0.5s;
+    animation-fill-mode: both;
+    animation-name: fadeIn;
+  }
+  @keyframes fadeOut {
+    from {opacity: 1;}
+    to {opacity: 0;}
     }
-    .sidebar_btn {
-      width:100%;
-      margin:1% 0 1% 0;
-    }
-    .sidebar_head {
-      width:100%;
-      padding: 3px 3px 3px 3px;
-      margin-bottom: 3%;
-    }
-    .page_root {
-      width:100%;height:100%;
-    }
-  </style>
-  <s-page theme="auto">
-    <s-drawer>
-      <div slot="start" style="width: auto;">
-            <s-card type="" class="sidebar_head">
-              <div slot="image"><img data-ui-img="true" src="${conf.sidebar.solt_1.src}"></div>
-              <div slot="headline"><span class='sidebar_username_bg'>${conf.sidebar.solt_1.alt}</span></div>
-            </s-card><br>
-            <s-card type="" class="sidebar_head">${conf.sidebar.solt_2.innerHTML}</s-card><br>
-            <s-card type="" class="sidebar_head" id="index_links_sidebarSlot" style="display:none;">
-              <s-fold folded="true">
-                <s-chip slot="trigger" clickable="true" class="sidebar_btn">
-                  <s-icon slot="start"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960"><path d="M240-80q-50 0-85-35t-35-85v-560q0-50 35-85t85-35h440v640H240q-17 0-28.5 11.5T200-200q0 17 11.5 28.5T240-160h520v-640h80v720H240Zm120-240h240v-480H360v480Zm-80 0v-480h-40q-17 0-28.5 11.5T200-760v447q10-3 19.5-5t20.5-2h40Zm-80-480v487-487Z"></path></svg></s-icon>
-                  目录
-                </s-chip>
-                <div id="index_links_parent"><ul id="index_links"></ul></div>
-              </s-fold>
-            </s-card><br>
-            <s-card type="" class="sidebar_head">
-              <div id="saying" class="selectable"><center>${conf.info.saying}</center></div>
-              <div id="time"><center><small>Since 2022-07-19</small></center></div>
-              <div id="license"><center><small>以<a href="${conf.info.licen.link}">${conf.info.licen.what}</a>协议提供内容</small></center></div>
-            </s-card>
-      </div>
-      <s-appbar>
-        <s-tooltip slot="navigation">
-          <s-icon-button type="filled-tonal" onclick="document.querySelector('s-drawer').toggle()">
-            <s-icon name="menu"></s-icon>
-          </s-icon-button>
-          切换侧栏
-        </s-tooltip>
-        <s-tooltip slot="headline">
-          <div id="pageTitle"> Title </div>
-          Title Detailed
-        </s-tooltip>
-        <s-tooltip slot="action">
-          <s-icon-button type="outlined" id="toTopBtn" slot="trigger">
-            <s-icon name="chevron_up"></s-icon>
-          </s-icon-button>
-          回到顶部
-        </s-tooltip>
-      </s-appbar>
-      <s-scroll-view id="contentScroll" style="flex-grow: 1">
-        ${document.body.innerHTML}
-      </s-scroll-view>
-    </s-drawer>
-  </s-page>
-  <!-- 页面重渲染插入代码结束 -->
+  .fadeOut {
+    animation-duration: 0.5s;
+    animation-fill-mode: both;
+    animation-name: fadeOut;
+  }
+  .sidebar_btn {
+    width:100%;
+    margin:1% 0 1% 0;
+  }
+  .sidebar_head {
+    width:100%;
+    padding: 3px 3px 3px 3px;
+    margin-bottom: 3%;
+  }
+  .page_root {
+    width:100%;height:100%;
+  }
+  html::-webkit-scrollbar {
+    width: 0;
+   height: 0;
+  }
+  html {
+    scrollbar-width: none;
+  }
+</style>
+<s-page id="_pmd-pageRoot" theme="auto">
+  <s-appbar id="_pmd-appbarRoot" style="position: sticky; top:0; z-index: 1000;">
+    <s-tooltip slot="navigation">
+      <s-icon-button id="_pmd-menuBtn" type="filled-tonal" slot="trigger" onclick="document.querySelector('s-drawer').toggle()">
+        <s-icon name="menu"></s-icon>
+      </s-icon-button>
+      切换侧栏
+    </s-tooltip>
+    <s-tooltip id="_pmd-pageTitleToolTip" slot="headline">
+      <div id="_pmd-pageTitle"> Title </div>
+      Title Detailed
+    </s-tooltip>
+    <s-tooltip slot="action">
+      <s-icon-button id="_pmd-githubBtn" style="display: none;" type="outlined" slot="trigger">
+        <s-icon></s-icon>
+      </s-icon-button>
+      在 Github.com 上查看
+    </s-tooltip>
+    <s-tooltip slot="action">
+      <s-icon-button id="_pmd-toTopBtn" type="outlined" slot="trigger">
+        <s-icon name="chevron_up"></s-icon>
+      </s-icon-button>
+      回到顶部
+    </s-tooltip>
+  </s-appbar>
+  <s-drawer id="_pmd-mainContent">
+    <div id="_pmd-LeftSiderbar" slot="start" style="width: auto;">
+      <s-card id="_pmd-slot_1" type="" class="sidebar_head">
+        <div slot="image"><img data-ui-img="true" src="${conf.sidebar.solt_1.src}"></div>
+        <div slot="headline"><span class='sidebar_username_bg'>${conf.sidebar.solt_1.alt}</span></div>
+      </s-card><br>
+      <s-card id="_pmd-slot_2" type="" class="sidebar_head">${conf.sidebar.solt_2.innerHTML}</s-card><br>
+      <s-card id="_pmd-slot_3" type="" class="sidebar_head" id="_pmd-index_links_sidebarSlot" style="display:none;">
+        <s-fold folded="true">
+          <s-chip slot="trigger" clickable="true" class="sidebar_btn">
+            <s-icon slot="start"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960"><path d="M240-80q-50 0-85-35t-35-85v-560q0-50 35-85t85-35h440v640H240q-17 0-28.5 11.5T200-200q0 17 11.5 28.5T240-160h520v-640h80v720H240Zm120-240h240v-480H360v480Zm-80 0v-480h-40q-17 0-28.5 11.5T200-760v447q10-3 19.5-5t20.5-2h40Zm-80-480v487-487Z"></path></svg></s-icon>
+            目录
+          </s-chip>
+          <div id="_pmd-index_links_parent"><ul id="_pmd-index_links"></ul></div>
+        </s-fold>
+      </s-card><br>
+      <s-card id="_pmd-slot_4" type="" class="sidebar_head">
+        <div id="_pmd-slot_4_saying" class="selectable"><center>${conf.info.saying}</center></div>
+        <div id="_pmd-slot_4_time"><center><small>Since 2022-07-19</small></center></div>
+        <div id="_pmd-slot_4_license"><center><small>以<a href="${conf.info.licen.link}">${conf.info.licen.what}</a>协议提供内容</small></center></div>
+      </s-card>
+    </div>
+    <div id="_pmd-originalContent">
+      ${document.body.innerHTML}
+    </div>
+  </s-drawer>
+</s-page>
+<!-- 页面重渲染插入代码结束 -->
 `;
 
-// 常变量定义区
-const pageTitle = document.getElementById("pageTitle");
-const toTopBtn = document.getElementById("toTopBtn");
-const contentScroll = document.getElementById("contentScroll");
+const pmdElements = {
+  pageRoot: document.getElementById("_pmd-pageRoot"),
+  appbar: {
+    root: document.getElementById("_pmd-appbarRoot"),
+    menuBtn: document.getElementById("_pmd-menuBtn"),
+    title: {
+      root: document.getElementById("_pmd-pageTitleToolTip"),
+      UI: document.getElementById("_pmd-pageTitle"),
+    },
+    toTopBtn: document.getElementById("_pmd-toTopBtn"),
+    Github: document.getElementById("_pmd-githubBtn"),
+  },
+  content: {
+    root: document.getElementById("_pmd-mainContent"),
+    lsidebar: {
+      root: document.getElementById("_pmd-LeftSiderbar"),
+      slot1: document.getElementById("_pmd-slot_1"),
+      slot2: document.getElementById("_pmd-slot_2"),
+      slot3: document.getElementById("_pmd-slot_3"),
+      slot4: {
+        root: document.getElementById("_pmd-slot_4"),
+        saying: document.getElementById("_pmd-slot_4_saying"),
+        time: document.getElementById("_pmd-slot_4_time"),
+        license: document.getElementById("_pmd-slot_4_license"),
+      },
+    },
+    origin: document.getElementById("_pmd-originalContent"),
+  },
+};
 
 //title动画和回顶按钮显隐
-toTopBtn.addEventListener("animationend", (event) => {if (toTopBtn.className == "fadeOut") {toTopBtn.style="display: none;";};});
+pmdElements.appbar.toTopBtn.addEventListener("animationend", (event) => {if (pmdElements.appbar.toTopBtn.className == "fadeOut") {pmdElements.appbar.toTopBtn.style="display: none;";};});
 function refreshAppbar() {
-  /*修改pageTitle的透明度*/
-  if (contentScroll.scrollTop/title_height <= 1.5) {
-    pageTitle.style.opacity=contentScroll.scrollTop/title_height;
-  };
+  /*修改UITitsle的透明度*/
+  // if (window.scrollTop/title_height <= 1.5) {
+  //   pmdElements.appbar.title.UI.style.opacity=window.scrollTop/title_height;
+  // };
   /*滚过一屏后显示回顶按钮的动画*/
-  if (contentScroll.scrollTop >= contentScroll.offsetHeight) {
-    if (toTopBtn.className != "fadeIn") {
-      toTopBtn.setAttribute("onclick","scrollToTop();");
-      toTopBtn.setAttribute("class","fadeIn");
-      toTopBtn.style="";
+  if (document.documentElement.scrollTop >= window.innerHeight) {
+    if (pmdElements.appbar.toTopBtn.className != "fadeIn") {
+      pmdElements.appbar.toTopBtn.setAttribute("onclick","scrollToTop();");
+      pmdElements.appbar.toTopBtn.setAttribute("class","fadeIn");
+      pmdElements.appbar.toTopBtn.style="";
     };
   } else {
-    if (toTopBtn.className != "fadeOut") {
-      toTopBtn.setAttribute("onclick","javascript:void(0);");
-      toTopBtn.setAttribute("class","fadeOut");
-      toTopBtn.style="display: none;";
-      toTopBtn.style="";
+    if (pmdElements.appbar.toTopBtn.className != "fadeOut") {
+      pmdElements.appbar.toTopBtn.setAttribute("onclick","javascript:void(0);");
+      pmdElements.appbar.toTopBtn.setAttribute("class","fadeOut");
+      pmdElements.appbar.toTopBtn.style="display: none;";
+      pmdElements.appbar.toTopBtn.style="";
     };
   };
 };
-contentScroll.addEventListener("scroll", refreshAppbar);
+window.addEventListener("scroll", refreshAppbar);
