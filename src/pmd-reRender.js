@@ -69,7 +69,7 @@ const conf = {
         <s-icon slot: "start"><svg width: "100px" height: "100px" viewBox: "0 0 24 24" xmlns: "http://www.w3.org/2000/svg"><g><path fill: "none" d: "M0 0h24v24H0z"/><path d: "M18.223 3.086a1.25 1.25 0 0 1 0 1.768L17.08 5.996h1.17A3.75 3.75 0 0 1 22 9.747v7.5a3.75 3.75 0 0 1-3.75 3.75H5.75A3.75 3.75 0 0 1 2 17.247v-7.5a3.75 3.75 0 0 1 3.75-3.75h1.166L5.775 4.855a1.25 1.25 0 1 1 1.767-1.768l2.652 2.652c.079.079.145.165.198.257h3.213c.053-.092.12-.18.199-.258l2.651-2.652a1.25 1.25 0 0 1 1.768 0zm.027 5.42H5.75a1.25 1.25 0 0 0-1.247 1.157l-.003.094v7.5c0 .659.51 1.199 1.157 1.246l.093.004h12.5a1.25 1.25 0 0 0 1.247-1.157l.003-.093v-7.5c0-.69-.56-1.25-1.25-1.25zm-10 2.5c.69 0 1.25.56 1.25 1.25v1.25a1.25 1.25 0 1 1-2.5 0v-1.25c0-.69.56-1.25 1.25-1.25zm7.5 0c.69 0 1.25.56 1.25 1.25v1.25a1.25 1.25 0 1 1-2.5 0v-1.25c0-.69.56-1.25 1.25-1.25z"/></g></svg></s-icon>
         Bilibili ↗</s-chip>`,
       /*左侧边栏·第2格内容中没有按文档编写请启用此项*/
-      sidebar_links_preventDefault: false,
+      preventDefault: false,
     },
     /*自定义边栏内容，禁用保持留空*/
     replacement: ``,
@@ -179,6 +179,27 @@ document.body.innerHTML = `
       --header-font-color: #f8f8f8;
     }
   }
+  .custom-scroll::after {
+    content: '';
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    width: 6px;
+    height: calc(100% - 40px);
+    background: rgba(0, 0, 0, 0.1);
+    border-radius: 3px;
+  }
+  .custom-scroll::before {
+    content: '';
+    position: fixed;
+    right: 20px;
+    width: 6px;
+    height: 80px;
+    background: #4ecdc4;
+    border-radius: 3px;
+    transition: top 0.2s ease-out;
+    top: calc(20px + (100% - 40px - 80px) * var(--scroll-ratio, 0));
+  }
   body {
     background-repeat: no-repeat;
     background-size: cover;
@@ -187,8 +208,18 @@ document.body.innerHTML = `
     background-position: center 0;
     background-attachment: fixed;
   }
+  .selectable {
+    user-select: text;
+    -moz-user-select: text;
+    -webkit-user-select: text;
+  }
+  .unselectable {
+    user-select: none;
+    -moz-user-select: none;
+    -webkit-user-select: none;
+  }
 </style>
-<s-page id="_pmd-pageRoot" theme="auto">
+<s-page class="unselectable" id="_pmd-pageRoot" theme="auto">
   <s-appbar id="_pmd-appbarRoot" style="position: sticky; top:0; z-index: 1000;">
     <s-tooltip slot="navigation">
       <s-icon-button id="_pmd-menuBtn" type="filled-tonal" slot="trigger" onclick="document.querySelector('s-drawer').toggle()">
@@ -196,10 +227,7 @@ document.body.innerHTML = `
       </s-icon-button>
       切换侧栏
     </s-tooltip>
-    <s-tooltip id="_pmd-pageTitleToolTip" slot="headline">
-      <div id="_pmd-pageTitle"> Title </div>
-      Title Detailed
-    </s-tooltip>
+    <div id="_pmd-pageTitle" slot="headline"> Title </div>
     <s-tooltip slot="action">
       <s-icon-button id="_pmd-githubBtn" style="display: none;" type="outlined" slot="trigger">
         <s-icon></s-icon>
@@ -213,7 +241,7 @@ document.body.innerHTML = `
       回到顶部
     </s-tooltip>
   </s-appbar>
-  <s-drawer id="_pmd-mainContent">
+  <s-drawer id="_pmd-mainContent" class="custom-scroll">
     <div id="_pmd-LeftSiderbar" slot="start" style="width: auto;">
       <s-card id="_pmd-slot_1" type="" class="sidebar_head">
         <div slot="image"><img data-ui-img="true" src="${conf.sidebar.solt_1.src}"></div>
@@ -230,12 +258,12 @@ document.body.innerHTML = `
         </s-fold>
       </s-card><br>
       <s-card id="_pmd-slot_4" type="" class="sidebar_head">
-        <div id="_pmd-slot_4_saying" class="selectable"><center>${conf.info.saying}</center></div>
+        <div id="_pmd-slot_4_saying"><center>${conf.info.saying}</center></div>
         <div id="_pmd-slot_4_time"><center><small>Since 2022-07-19</small></center></div>
         <div id="_pmd-slot_4_license"><center><small>以<a href="${conf.info.licen.link}">${conf.info.licen.what}</a>协议提供内容</small></center></div>
       </s-card>
     </div>
-    <div id="_pmd-originalContent">
+    <div id="_pmd-originalContent" class="selectable">
       ${document.body.innerHTML}
     </div>
   </s-drawer>
@@ -248,10 +276,7 @@ const pmdElements = {
   appbar: {
     root: document.getElementById("_pmd-appbarRoot"),
     menuBtn: document.getElementById("_pmd-menuBtn"),
-    title: {
-      root: document.getElementById("_pmd-pageTitleToolTip"),
-      UI: document.getElementById("_pmd-pageTitle"),
-    },
+    title: document.getElementById("_pmd-pageTitle"),
     toTopBtn: document.getElementById("_pmd-toTopBtn"),
     Github: document.getElementById("_pmd-githubBtn"),
   },
@@ -269,17 +294,35 @@ const pmdElements = {
         license: document.getElementById("_pmd-slot_4_license"),
       },
     },
-    origin: document.getElementById("_pmd-originalContent"),
+    origin: {
+      root: document.getElementById("_pmd-originalContent"),
+      header: {
+        root: document.getElementsByClassName("page-header")[0],
+        main: document.getElementsByClassName("project-name")[0],
+        sub: document.getElementsByClassName("project-tagline")[0],
+      },
+      main: {
+        root: document.getElementById("content"),
+        quote: document.querySelectorAll("blockquote"),
+        img: document.querySelectorAll("img"),
+        code: document.querySelectorAll("pre"),
+        link: document.querySelectorAll("a"),
+        header: document.querySelectorAll("h1,h2,h3,h4,h5,h6"),
+        list: document.querySelectorAll("ul,ol"),
+        table: document.querySelectorAll("table"),
+      },
+    },
   },
+  pageConfig: document.getElementById("mdRender_config"),
 };
 
 //title动画和回顶按钮显隐
 pmdElements.appbar.toTopBtn.addEventListener("animationend", (event) => {if (pmdElements.appbar.toTopBtn.className == "fadeOut") {pmdElements.appbar.toTopBtn.style="display: none;";};});
 function refreshAppbar() {
   /*修改UITitsle的透明度*/
-  // if (window.scrollTop/title_height <= 1.5) {
-  //   pmdElements.appbar.title.UI.style.opacity=window.scrollTop/title_height;
-  // };
+  if (document.documentElement.scrollTop / pmdElements.content.origin.header.root.scrollHeight <= 1.5) {
+    pmdElements.appbar.title.style.opacity=document.documentElement.scrollTop / pmdElements.content.origin.header.root.scrollHeight;
+  };
   /*滚过一屏后显示回顶按钮的动画*/
   if (document.documentElement.scrollTop >= window.innerHeight) {
     if (pmdElements.appbar.toTopBtn.className != "fadeIn") {
@@ -297,3 +340,28 @@ function refreshAppbar() {
   };
 };
 window.addEventListener("scroll", refreshAppbar);
+
+//检查页面设置元素并应用
+if (!!pmdElements.pageConfig) {
+  if ((!conf.sidebar.solt_2.preventDefault)&&(Math.floor(pmdElements.pageConfig.dataset.sideshipHide) >= 0)) {
+    /* sideship-hide Int 禁用指定边栏链接 */
+    let sideShipBtn=document.getElementById("side_ship_"+Math.floor(pmdElements.pageConfig.dataset.sideshipHide))
+    sideShipBtn.setAttribute("type", "filled-tonal");
+    sideShipBtn.setAttribute("clickable", "false");
+    sideShipBtn.setAttribute("onclick", "void(0);");s
+  };
+  if (pmdElements.pageConfig.hasAttribute("data-title")) {
+    /* title Str 强制覆写UI标题，若不存在则使用文章标题 */
+    pmdElements.appbar.title.innerHTML = pmdElements.pageConfig.dataset.title;
+  } else {
+    pmdElements.appbar.title.innerHTML = pmdElements.content.origin.header.main.innerHTML;
+  };
+  if (!!pmdElements.pageConfig.dataset.redirect) {
+    /* redirect 重定向中间页 */
+    // window.location.href=pmdElements.pageConfig.dataset.redirect;
+  };
+};
+
+//页面初始化
+refreshAppbar();
+console.log('%cPages Markdown Re-Render v'+PluginVer[0]+'%c['+PluginVer[1]+'%c]\nCopyright (C) 2024 kdxiaoyi. All right reserved.','color:#90BBB1;','color:#90BBB1;','color:#90BBB1;');
