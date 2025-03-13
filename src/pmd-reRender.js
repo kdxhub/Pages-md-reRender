@@ -130,22 +130,45 @@ document.body.innerHTML = `
     animation-fill-mode: both;
     animation-name: fadeOut;
   }
+</style><style>
+  #_pmd-pageRoot {
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+  }
+  #_pmd-appbarRoot {
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+  }
+  #_pmd-mainContent {
+    display: flex;
+    flex-direction: row;
+    align-items: stretch;
+  }
+  #_pmd-LeftSiderbar {
+    display: flex;
+    flex-direction: column;
+  }
+  #_pmd-originalContent {
+    display: flex;
+    flex-direction: column;
+  }
+  .sidebar_head {
+    display: flex;
+    flex-direction: column;
+    width:94%;
+    padding: 3px 3px 3px 3px;
+    margin: 3% 3% 0% 3%;
+  }
   .sidebar_btn {
     width:100%;
     margin:1% 0 1% 0;
   }
-  .sidebar_head {
-    width:100%;
-    padding: 3px 3px 3px 3px;
-    margin-bottom: 3%;
+  .main-content {
+    max-width: 100%;
   }
-  html::-webkit-scrollbar {
-    width: 0;
-   height: 0;
-  }
-  html {
-    scrollbar-width: none;
-  }
+</style><style>
   @media not (prefers-color-scheme: dark) {
     body {
       background: url(${conf.img.background.src});
@@ -165,7 +188,6 @@ document.body.innerHTML = `
     #_pmd-pageRoot {
       background: rgba(250,253,252,${conf.img.background.alpha[1]});
       backdrop-filter: blur(${conf.img.background.blur}px);
-    }
     * {
       color-scheme:dark;
     }
@@ -179,35 +201,12 @@ document.body.innerHTML = `
       --header-font-color: #f8f8f8;
     }
   }
-  .custom-scroll::after {
-    content: '';
-    position: fixed;
-    top: 20px;
-    right: 20px;
-    width: 6px;
-    height: calc(100% - 40px);
-    background: rgba(251, 252, 254, 0);
-    border-radius: 3px;
+</style><style>
+  html::-webkit-scrollbar {
+    width: 0;
+    height: 0;
   }
-  .custom-scroll::before {
-    content: '';
-    position: fixed;
-    right: 20px;
-    width: 6px;
-    height: 80px;
-    background: var(--s-color-surface-variant, #dbe4e7);
-    border-radius: 3px;
-    transition: top 0.2s ease-out;
-    top: calc(20px + (100% - 40px - 80px) * var(--scroll-ratio, 0));
-  }
-  body {
-    background-repeat: no-repeat;
-    background-size: cover;
-    -webkit-background-size: cover;
-    -o-background-size: cover;
-    background-position: center 0;
-    background-attachment: fixed;
-  }
+</style><style>
   .selectable {
     user-select: text;
     -moz-user-select: text;
@@ -218,9 +217,18 @@ document.body.innerHTML = `
     -moz-user-select: none;
     -webkit-user-select: none;
   }
+</style><style>
+  body {
+    background-repeat: no-repeat;
+    background-size: cover;
+    -webkit-background-size: cover;
+    -o-background-size: cover;
+    background-position: center 0;
+    background-attachment: fixed;
+  }
 </style>
-<s-page class="unselectable" id="_pmd-pageRoot" theme="auto">
-  <s-appbar id="_pmd-appbarRoot" style="position: sticky; top:0; z-index: 1000;">
+<s-page class="unselectable page_root" id="_pmd-pageRoot" theme="auto">
+  <s-appbar id="_pmd-appbarRoot">
     <s-tooltip slot="navigation">
       <s-icon-button id="_pmd-menuBtn" type="filled-tonal" slot="trigger" onclick="document.querySelector('s-drawer').toggle()">
         <s-icon name="menu"></s-icon>
@@ -246,9 +254,9 @@ document.body.innerHTML = `
       <s-card id="_pmd-slot_1" type="" class="sidebar_head">
         <div slot="image"><img data-ui-img="true" src="${conf.sidebar.solt_1.src}"></div>
         <div slot="headline"><span class='sidebar_username_bg'>${conf.sidebar.solt_1.alt}</span></div>
-      </s-card><br>
-      <s-card id="_pmd-slot_2" type="" class="sidebar_head">${conf.sidebar.solt_2.innerHTML}</s-card><br>
-      <s-card id="_pmd-slot_3" type="" class="sidebar_head" id="_pmd-index_links_sidebarSlot" style="display:none;">
+      </s-card>
+      <s-card id="_pmd-slot_2" type="" class="sidebar_head">${conf.sidebar.solt_2.innerHTML}</s-card>
+      <s-card id="_pmd-slot_3" type="" class="sidebar_head" id="_pmd-index_links_sidebarSlot">
         <s-fold folded="true">
           <s-chip slot="trigger" clickable="true" class="sidebar_btn">
             <s-icon slot="start"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960"><path d="M240-80q-50 0-85-35t-35-85v-560q0-50 35-85t85-35h440v640H240q-17 0-28.5 11.5T200-200q0 17 11.5 28.5T240-160h520v-640h80v720H240Zm120-240h240v-480H360v480Zm-80 0v-480h-40q-17 0-28.5 11.5T200-760v447q10-3 19.5-5t20.5-2h40Zm-80-480v487-487Z"></path></svg></s-icon>
@@ -256,16 +264,16 @@ document.body.innerHTML = `
           </s-chip>
           <div id="_pmd-index_links_parent"><ul id="_pmd-index_links"></ul></div>
         </s-fold>
-      </s-card><br>
+      </s-card>
       <s-card id="_pmd-slot_4" type="" class="sidebar_head">
         <div id="_pmd-slot_4_saying"><center>${conf.info.saying}</center></div>
         <div id="_pmd-slot_4_time"><center><small>Since 2022-07-19</small></center></div>
         <div id="_pmd-slot_4_license"><center><small>以<a href="${conf.info.licen.link}">${conf.info.licen.what}</a>协议提供内容</small></center></div>
       </s-card>
     </div>
-    <div id="_pmd-originalContent" class="selectable">
+    <s-scroll-view id="_pmd-originalContent" class="selectable">
       ${document.body.innerHTML}
-    </div>
+    </s-scroll-view>
   </s-drawer>
 </s-page>
 <!-- 页面重渲染插入代码结束 -->
@@ -324,7 +332,7 @@ function msg(Message, ConfirmText, isWarning) { let infoJson = {}; infoJson.root
 
 //title动画和回顶按钮显隐
 pmdElements.appbar.toTopBtn.addEventListener("animationend", (event) => { if (pmdElements.appbar.toTopBtn.className == "fadeOut") { pmdElements.appbar.toTopBtn.style = "display: none;"; }; });
-function refreshAppbar() {
+function updataAppbar() {
   /*修改UITitsle的透明度*/
   if (document.documentElement.scrollTop / pmdElements.content.origin.header.root.scrollHeight <= 1.5) {
     pmdElements.appbar.title.style.opacity = document.documentElement.scrollTop / pmdElements.content.origin.header.root.scrollHeight;
@@ -345,7 +353,7 @@ function refreshAppbar() {
     };
   };
 };
-window.addEventListener("scroll", refreshAppbar);
+window.addEventListener("scroll", updataAppbar);
 
 //检查页面设置元素并应用
 if (!!pmdElements.pageConfig) {
@@ -368,16 +376,6 @@ if (!!pmdElements.pageConfig) {
   };
 };
 
-//伪滚动条行为
-function /* 修改滚动条位置 */updateCustomScroll() {
-  document.documentElement.style.setProperty(
-    '--scroll-ratio',
-    document.documentElement.scrollTop / (document.documentElement.scrollHeight - window.innerHeight)
-  );
-};
-window.addEventListener('scroll', updateCustomScroll);
-
 //页面初始化
-refreshAppbar();
-updateCustomScroll();
+updataAppbar();
 console.log('%cPages Markdown Re-Render v' + PluginVer[0] + '%c[' + PluginVer[1] + '%c]\nCopyright (C) 2024 kdxiaoyi. All right reserved.', 'color:#90BBB1;', 'color:#90BBB1;', 'color:#90BBB1;');
