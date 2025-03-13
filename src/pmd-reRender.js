@@ -186,7 +186,7 @@ document.body.innerHTML = `
     right: 20px;
     width: 6px;
     height: calc(100% - 40px);
-    background: rgba(0, 0, 0, 0.1);
+    background: rgba(251, 252, 254, 0);
     border-radius: 3px;
   }
   .custom-scroll::before {
@@ -195,7 +195,7 @@ document.body.innerHTML = `
     right: 20px;
     width: 6px;
     height: 80px;
-    background: #4ecdc4;
+    background: var(--s-color-surface-variant, #dbe4e7);
     border-radius: 3px;
     transition: top 0.2s ease-out;
     top: calc(20px + (100% - 40px - 80px) * var(--scroll-ratio, 0));
@@ -362,6 +362,16 @@ if (!!pmdElements.pageConfig) {
   };
 };
 
+//伪滚动条行为
+function /* 修改滚动条位置 */updateCustomScroll() {
+  document.documentElement.style.setProperty(
+    '--scroll-ratio',
+    document.documentElement.scrollTop / (document.documentElement.scrollHeight - window.innerHeight)
+  );
+};
+window.addEventListener('scroll', updateCustomScroll);
+
 //页面初始化
 refreshAppbar();
+updateCustomScroll();
 console.log('%cPages Markdown Re-Render v'+PluginVer[0]+'%c['+PluginVer[1]+'%c]\nCopyright (C) 2024 kdxiaoyi. All right reserved.','color:#90BBB1;','color:#90BBB1;','color:#90BBB1;');
