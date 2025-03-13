@@ -243,7 +243,7 @@ document.body.innerHTML = `
       在 Github.com 上查看
     </s-tooltip>
     <s-tooltip slot="action">
-      <s-icon-button id="_pmd-toTopBtn" type="outlined" slot="trigger">
+      <s-icon-button id="_pmd-toTopBtn" style="display: none;" type="outlined" slot="trigger">
         <s-icon name="chevron_up"></s-icon>
       </s-icon-button>
       回到顶部
@@ -304,6 +304,10 @@ const pmdElements = {
       },
     },
     origin: {
+      _: {
+        toTop_intervalID: -1,
+        toTop_interval_speed: 0,
+      },
       root: document.getElementById("_pmd-originalContent"),
       header: {
         root: document.getElementsByClassName("page-header")[0],
@@ -334,11 +338,13 @@ function msg(Message, ConfirmText, isWarning) { let infoJson = {}; infoJson.root
 pmdElements.appbar.toTopBtn.addEventListener("animationend", (event) => { if (pmdElements.appbar.toTopBtn.className == "fadeOut") { pmdElements.appbar.toTopBtn.style = "display: none;"; }; });
 function updataAppbar() {
   /*修改UITitsle的透明度*/
-  if (document.documentElement.scrollTop / pmdElements.content.origin.header.root.scrollHeight <= 1.5) {
-    pmdElements.appbar.title.style.opacity = document.documentElement.scrollTop / pmdElements.content.origin.header.root.scrollHeight;
+  if (pmdElements.content.origin.root.scrollTop / pmdElements.content.origin.header.root.scrollHeight <= 1) {
+    pmdElements.appbar.title.style.opacity = pmdElements.content.origin.root.scrollTop / pmdElements.content.origin.header.root.scrollHeight;
+  } else {
+    pmdElements.appbar.title.style.opacity = 1;
   };
   /*滚过一屏后显示回顶按钮的动画*/
-  if (document.documentElement.scrollTop >= window.innerHeight) {
+  if (pmdElements.content.origin.root.scrollTop >= window.innerHeight) {
     if (pmdElements.appbar.toTopBtn.className != "fadeIn") {
       pmdElements.appbar.toTopBtn.setAttribute("onclick", "scrollToTop();");
       pmdElements.appbar.toTopBtn.setAttribute("class", "fadeIn");
@@ -353,7 +359,24 @@ function updataAppbar() {
     };
   };
 };
-window.addEventListener("scroll", updataAppbar);
+pmdElements.content.origin.root.addEventListener("scroll", updataAppbar);
+
+//回顶
+function scrollToTop() {
+  /*回顶自动清除章节锚点*/
+  window.location.hash = "";
+  /*计算回顶速度并创建回顶循环*/
+  pmdElements.content.origin._.toTop_interval_speed = -(pmdElements.content.origin.root.scrollTop / (80));
+  if (pmdElements.content.origin._.toTop_intervalID != -1) { pmdElements.content.origin._.toTop_interval_speed = pmdElements.content.origin._.toTop_interval_speed * 1.5; return; };
+  pmdElements.content.origin._.toTop_intervalID = setInterval(() => {
+    pmdElements.content.origin.root.scrollBy(0, pmdElements.content.origin._.toTop_interval_speed);
+    if (pmdElements.content.origin.root.scrollTop <= 0) {
+      clearInterval (pmdElements.content.origin._.toTop_intervalID);
+      pmdElements.content.origin._.toTop_intervalID = -1;
+    };
+  }, 1);
+};
+pmdElements.appbar.toTopBtn.addEventListener("click", scrollToTop);
 
 //检查页面设置元素并应用
 if (!!pmdElements.pageConfig) {
