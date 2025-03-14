@@ -1,0 +1,66 @@
+name: Auto Release
+
+on:
+  push:
+    paths:
+      - 'src/pmd-reRender.min.js'
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v2
+
+    - name: Set up Node.js
+      uses: actions/setup-node@v2
+      with:
+        node-version: '14'
+
+    - name: Get plugin version
+      id: get_version
+      run: |
+        version=$(node -p "require('./src/pmd-reRender.js').PluginVer[0]")
+        echo "::set-output name=VERSION::$version"
+
+    - name: Create Release
+      id: create_release
+      uses: actions/create-release@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        tag_name: v${{ steps.get_version.outputs.VERSION }}
+        release_name: Release v${{ steps.get_version.outputs.VERSION }}
+        draft: false
+        prerelease: false
+
+    - name: Upload pmd-reRender.min.js
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ steps.create_release.outputs.upload_url }}
+        asset_path: src/pmd-reRender.min.js
+        asset_name: pmd-reRender.min.js
+        asset_content_type: application/javascript
+
+    - name: Upload pmd-reRender.js
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ steps.create_release.outputs.upload_url }}
+        asset_path: src/pmd-reRender.js
+        asset_name: pmd-reRender.js
+        asset_content_type: application/javascript
+
+    - name: Upload SoberJS
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ steps.create_release.outputs.upload_url }}
+        asset_path: src/sober@1.0.6.min.js
+        asset_name: sober@1.0.6.min.js
+        asset_content_type: application/javascript
