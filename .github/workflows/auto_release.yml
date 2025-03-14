@@ -21,8 +21,13 @@ jobs:
     - name: Get plugin version
       id: get_version
       run: |
-        version=$(node -p "require('./src/pmd-reRender.js').PluginVer[0]")
+        version=$(node -p "require('./src/pmd-reRender.min.js').PluginVer[0]")
         echo "::set-output name=VERSION::$version"
+        if [[ "$version" == *"preview"* || "$version" == *"beta"* || "$version" == *"dev"* ]]; then
+          echo "::set-output name=PRERELEASE::true"
+        else
+          echo "::set-output name=PRERELEASE::false"
+        fi
 
     - name: Create Release
       id: create_release
@@ -33,7 +38,8 @@ jobs:
         tag_name: v${{ steps.get_version.outputs.VERSION }}
         release_name: Release v${{ steps.get_version.outputs.VERSION }}
         draft: false
-        prerelease: false
+        prerelease: ${{ steps.get_version.outputs.PRERELEASE }}
+        body: Github Action 工作流自动发布版本 v${{ steps.get_version.outputs.VERSION }}。
 
     - name: Upload pmd-reRender.min.js
       uses: actions/upload-release-asset@v1
