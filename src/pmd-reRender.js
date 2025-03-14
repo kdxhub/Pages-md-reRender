@@ -13,6 +13,8 @@ const conf = {
       /*文章授权协议链接*/
       link: `https://creativecommons.org/licenses/by-nc/4.0/legalcode.zh-hans`,
     },
+    /*自定义CSS样式*/
+    style: ``,
   },
   code: {
   /*在代码块下方添加复制代码按钮*/
@@ -111,7 +113,7 @@ const /*插件版本（建议不要修改）*/PluginVer=["2.0.0",18];
 document.body.innerHTML = `
 <!-- Pages Markdown Re-Render -->
 <!-- 页面重渲染插入代码开始 -->
-<style>
+<style id="_pmd-style-animation">
   @keyframes fadeIn {
     from {opacity: 0;}
     to {opacity: 1;}
@@ -130,7 +132,11 @@ document.body.innerHTML = `
     animation-fill-mode: both;
     animation-name: fadeOut;
   }
-</style><style>
+</style><style id="_pmd-style-ui">
+  html::-webkit-scrollbar {
+    width: 0;
+    height: 0;
+  }
   #_pmd-pageRoot {
     display: flex;
     flex-direction: column;
@@ -168,7 +174,7 @@ document.body.innerHTML = `
   .main-content {
     max-width: 100%;
   }
-</style><style>
+</style><style id="_pmd-style-darkmode">
   @media not (prefers-color-scheme: dark) {
     body {
       background: url(${conf.img.background.src});
@@ -201,12 +207,7 @@ document.body.innerHTML = `
       --header-font-color: #f8f8f8;
     }
   }
-</style><style>
-  html::-webkit-scrollbar {
-    width: 0;
-    height: 0;
-  }
-</style><style>
+</style><style id="_pmd-style-predefinite">
   .selectable {
     user-select: text;
     -moz-user-select: text;
@@ -217,16 +218,7 @@ document.body.innerHTML = `
     -moz-user-select: none;
     -webkit-user-select: none;
   }
-</style><style>
-  body {
-    background-repeat: no-repeat;
-    background-size: cover;
-    -webkit-background-size: cover;
-    -o-background-size: cover;
-    background-position: center 0;
-    background-attachment: fixed;
-  }
-</style>
+</style><style id="_pmd-style-custom">${conf.info.style}</style>
 <s-page class="unselectable page_root" id="_pmd-pageRoot" theme="auto">
   <s-appbar id="_pmd-appbarRoot">
     <s-tooltip slot="navigation">
@@ -282,6 +274,13 @@ document.body.innerHTML = `
 //pmd元素常量组
 const pmdElements = {
   pageRoot: document.getElementById("_pmd-pageRoot"),
+  style: {
+    animation: document.getElementById("_pmd-style-animation"),
+    ui: document.getElementById("_pmd-style-ui"),
+    darkmode: document.getElementById("_pmd-style-darkmode"),
+    predefinite: document.getElementById("_pmd-style-predefinite"),
+    custom: document.getElementById("_pmd-style-custom"),
+  },
   appbar: {
     root: document.getElementById("_pmd-appbarRoot"),
     menuBtn: document.getElementById("_pmd-menuBtn"),
@@ -327,12 +326,36 @@ const pmdElements = {
     },
   },
   pageConfig: document.getElementById("mdRender_config"),
+  link: document.createElement("a"),
 };
 
 //通用函数
-function openURL(URL, IsInPresentWindow) { if (IsInPresentWindow != undefined) { link_a.target = "_self"; } else { link_a.target = "_blank"; }; link_a.href = URL; link_a.click(); };
 function getQueryString(name) { let reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)", "i"); let r = window.location.search.substr(1).match(reg); if (r != null) { return unescape(r[2]); }; return null; };
-function msg(Message, ConfirmText, isWarning) { let infoJson = {}; infoJson.root = document.querySelector('s-page'); infoJson.text = Message; if (ConfirmText == undefined) { infoJson.action = ""; } else { infoJson.action = ConfirmText; }; if (isWarning != undefined) { infoJson.type = "error"; }; customElements.get('s-snackbar').show(infoJson);};
+function openURL(URL, IsInPresentWindow) {
+  if (IsInPresentWindow) {
+    pmdElements.link.target = "_self";
+  } else {
+    pmdElements.link.target = "_blank";
+  };
+  pmdElements.link.href = URL;
+  pmdElements.link.click();
+};
+function msg(Message, ConfirmBtnText, isWarning, duration, onclick, align, icon) {
+  let infoJSON = {
+    root: pmdElements.pageRoot,
+    text: Message,
+    type: "basic",
+    action: {},
+  };
+  if (ConfirmBtnText) {infoJSON.action.text = ConfirmBtnText.toString();};
+  if (isWarning) {infoJSON.type = "error";};
+  if (duration) {infoJSON.duration = parseInt(duration.toString());};
+  if (onclick) {infoJSON.action.click = onclick;};
+  if (align) {infoJSON.align = ["auto", "top", "bottom"][ align.toString().match(/\d+/) % 3 ];};
+  if (icon) {infoJSON.icon = icon;};s
+  customElements.get("s-snackbar").builder(infoJSON);
+  return infoJSON;
+};
 
 //title动画和回顶按钮显隐
 pmdElements.appbar.toTopBtn.addEventListener("animationend", (event) => { if (pmdElements.appbar.toTopBtn.className == "fadeOut") { pmdElements.appbar.toTopBtn.style = "display: none;"; }; });
