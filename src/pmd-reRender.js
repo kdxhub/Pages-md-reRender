@@ -201,6 +201,44 @@ document.body.innerHTML = `
   .site-footer>p {
     padding: 0 20px 0 20px;
   }
+  ul#index_links {
+    padding: 0 0 0 0;
+    margin: 0 0 0 1.2em;
+    wdith:100%;
+    list-style-type: none;
+  }
+  ul.index {
+    padding: 0 0 0 .8em;
+    list-style-type: none;
+  }
+  li.index {
+    padding: 0 0 0 0;
+  }
+  ul.index li.index::before {
+    content: "";
+    position: absolute;
+    transform: translateY(.6em) translateX(-.75em);
+    width: .2em;
+    height: .2em;
+    border-radius: 50%;
+    border: .075em solid var(--s-color-primary, black);
+  }
+  .headerProcessed {
+    text-decoration: none;
+    cursor: alias;
+  }
+  .headerProcessed:hover {
+    text-decoration: underline;
+  }
+  .headerLinkBtn {
+    height: 1rem;
+    width: 1rem;
+    transition: opacity 0.15s ease;
+    opacity: 0;
+  }
+  .headerProcessed:hover > .headerLinkBtn {
+    opacity: 1;
+  }
 </style><style id="_pmd-style-darkmode">
   @media not (prefers-color-scheme: dark) {
     body {
@@ -297,7 +335,7 @@ document.body.innerHTML = `
       </s-card>
       <s-card id="_pmd-slot_2" type="" class="sidebar_head">${conf.sidebar.solt_2.innerHTML}</s-card>
       <s-card id="_pmd-slot_3" type="" class="sidebar_head">
-        <s-fold folded="true" id="_pmd-index_links_parent">
+        <s-fold folded="true" id="_pmd-index_links_parent" style="display:none">
           <s-chip slot="trigger" clickable="true" class="sidebar_btn">
             <s-icon slot="start"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960"><path d="M240-80q-50 0-85-35t-35-85v-560q0-50 35-85t85-35h440v640H240q-17 0-28.5 11.5T200-200q0 17 11.5 28.5T240-160h520v-640h80v720H240Zm120-240h240v-480H360v480Zm-80 0v-480h-40q-17 0-28.5 11.5T200-760v447q10-3 19.5-5t20.5-2h40Zm-80-480v487-487Z"></path></svg></s-icon>
             目录
@@ -404,6 +442,7 @@ const pmdElements = {
     },
   },
   pageConfig: document.getElementById("mdRender_config"),
+  index_overwrite: document.getElementById("index_overwrite"),
 };
 
 //通用函数
@@ -507,6 +546,44 @@ if (!!pmdElements.pageConfig) {
     /* redirect 重定向中间页 */
     // window.location.href=pmdElements.pageConfig.dataset.redirect;
   };
+};
+
+//正文内容标题统计与处理
+let hn_last_level = 1;
+let hn_index_cache = "";
+document.querySelectorAll('#_pmd-originalContent h1, #_pmd-originalContent h2, #_pmd-originalContent h3, #_pmd-originalContent h4, #_pmd-originalContent h5, #_pmd-originalContent h6').forEach((HeaderElement) => {
+  HeaderElement.dataset.title = HeaderElement.innerHTML;
+  if (HeaderElement.className/*不处理文章开头的副标题*/.includes("project-tagline")) { return; };
+  let hn_level = HeaderElement.tagName.replace(/\D/g, "");
+  if (!HeaderElement.id) {/*判断标题元素是否有id，若无则写入一个*/
+    let name = `_` + HeaderElement.innerHTML;
+    HeaderElement.id = name;
+  } else {
+    let name = HeaderElement.id;
+  };
+  if (conf.index.enabled) {
+    if (hn_level > hn_last_level) /*如果进入下级标题，则需要新建ul*/ { hn_index_cache += `<ul class="index">`.repeat(hn_level - hn_last_level); };
+    if (hn_level < hn_last_level) /*如果进入上级标题则结束ul*/ { hn_index_cache += `</ul>`.repeat(hn_last_level - hn_level); };
+    hn_index_cache += `<li class="index"><a href="#${HeaderElement.id}">${HeaderElement.innerHTML}</a></li>`;
+  };
+  hn_last_level = hn_level;
+  if (conf.hyper_markdown.header_link && !HeaderElement.className/*不处理文章开头的标题*/.includes("project-name")) {
+    HeaderElement.addEventListener("click", () => {
+      openURL("#"+HeaderElement.id, true);
+    });
+    HeaderElement.classList.add("headerProcessed");
+    HeaderElement.innerHTML += `<s-icon class="headerLinkBtn"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960"><path d="M680-160v-120H560v-80h120v-120h80v120h120v80H760v120h-80ZM440-280H280q-83 0-141.5-58.5T80-480q0-83 58.5-141.5T280-680h160v80H280q-50 0-85 35t-35 85q0 50 35 85t85 35h160v80ZM320-440v-80h320v80H320Zm560-40h-80q0-50-35-85t-85-35H520v-80h160q83 0 141.5 58.5T880-480Z"></path></svg></s-icon>`;
+  };
+});
+hn_index_cache = "<ul>" + hn_index_cache + "</ul>";
+if (conf.index.sidebar) {
+  pmdElements.content.lsidebar.slot3.index_links.sub.innerHTML = hn_index_cache;
+  pmdElements.content.lsidebar.slot3.index_links.root.style = "";
+} else {
+  pmdElements.content.lsidebar.slot3.index_links.remove();
+};
+if /*向具有指定id的元素中写入目录信息*/ (conf.index.sidebar && !!(pmdElements.index_overwrite)) {
+  pmdElements.index_overwrite.innerHTML = hn_index_cache;
 };
 
 //blockquote高级语法
