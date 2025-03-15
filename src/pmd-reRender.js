@@ -147,6 +147,7 @@ document.body.innerHTML = `
     -o-background-size: cover;
     background-position: center 0;
     background-attachment: fixed;
+    background-image: url(${conf.img.background.src});
   }
   html::-webkit-scrollbar {
     width: 0;
@@ -266,29 +267,17 @@ document.body.innerHTML = `
   }
 </style><style id="_pmd-style-darkmode">
   @media not (prefers-color-scheme: dark) {
-    body {
-      background: url(${conf.img.background.src});
-    }
     #_pmd-pageRoot {
       background: rgba(250,253,252,${conf.img.background.alpha[0]});
       backdrop-filter: blur(${conf.img.background.blur}px);
     }
-    .sidebar_username_bg {
-    background:rgba(250,253,252,${conf.img.background.alpha[1]});
-    }
   }
   @media (prefers-color-scheme: dark) {
-    body {
-      background: url(${conf.img.background.src});
-    }
     #_pmd-pageRoot {
       background: rgba(5,2,3,${conf.img.background.alpha[1]});
       backdrop-filter: blur(${conf.img.background.blur}px);
     * {
       color-scheme:dark;
-    }
-    .sidebar_username_bg {
-      background:rgba(5,2,3,${conf.img.background.alpha[1]});
     }
     .highlight {
       background-color: rgb(39 43 42);
@@ -356,7 +345,7 @@ document.body.innerHTML = `
     <div id="_pmd-LeftSiderbar" slot="start"><s-scroll-view class="unselectable" style="height: 100%; padding-bottom: 1rem;">
       <s-card id="_pmd-slot_1" type="" class="sidebar_head">
         <div slot="image"><img class="ui-img" src="${conf.sidebar.solt_1.src}"></div>
-        <div slot="headline"><span class='sidebar_username_bg'>${conf.sidebar.solt_1.alt}</span></div>
+        <div slot="headline"><span>${conf.sidebar.solt_1.alt}</span></div>
       </s-card>
       <s-card id="_pmd-slot_2" type="" class="sidebar_head">${conf.sidebar.solt_2.innerHTML}</s-card>
       <s-card id="_pmd-slot_3" type="" class="sidebar_head">
