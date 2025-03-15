@@ -576,7 +576,7 @@ if (!!pmdElements.pageConfig) {
     let sideShipBtn = document.getElementById("side_ship_" + Math.floor(pmdElements.pageConfig.dataset.sideshipHide))
     sideShipBtn.setAttribute("type", "filled-tonal");
     sideShipBtn.setAttribute("clickable", "false");
-    sideShipBtn.setAttribute("onclick", "void(0);"); s
+    sideShipBtn.setAttribute("onclick", "void(0);");
   };
   if (pmdElements.pageConfig.hasAttribute("data-title")) {
     /* title Str 强制覆写UI标题，若不存在则使用文章标题 */
