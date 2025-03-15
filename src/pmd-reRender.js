@@ -23,8 +23,6 @@ const conf = {
       /*Cloudflare节点信息映射表，一般不需要改动*/
       nodes: false,
     },
-    /*KDX-Shared User Interface标识符（启用后会在同样使用了pmd的网站间共享用户侧设置）*/
-    kdxSharedUI: true,
     /*允许将正文内的View on Github按钮转移*/
     view_on_github: true,
   },
@@ -37,16 +35,12 @@ const conf = {
     done: "Copied!",
   },
   img: {
-    view: {
-      /*允许点击图片来查看大图*/
-      enabled: true,
-      /*启用查看大图查看原图按钮*/
-      open: true,
-    },
+    /*允许点击图片来查看原图*/
+    view: true,
     imgse_com: {
-      /*启用查看大图对imgse图床的优化*/
+      /*启用查看原图对imgse图床的优化*/
       enabled: true,
-      /*启用查看大图查看原图 跳转至imgse查看页而不是源文件*/
+      /*启用查看原图 跳转至imgse查看页而不是源文件*/
       detail: true,
     },
     /*图片加载失败后的占位符图片*/
@@ -251,6 +245,17 @@ document.body.innerHTML = `
     height: 1em;
     transform: translateY(-0.05em) translateX(-0.05em);
   }
+  img:not(.ui-img) {
+    max-width: 75%;
+    max-height: 50vh;
+    width: auto;
+    height: auto;
+    margin-left: auto;
+    margin-right: auto;
+    object-fit: contain;
+    box-sizing: content-box;
+    display: block;
+  }
 </style><style id="_pmd-style-darkmode">
   @media not (prefers-color-scheme: dark) {
     body {
@@ -342,7 +347,7 @@ document.body.innerHTML = `
   <s-drawer id="_pmd-mainContent">
     <div id="_pmd-LeftSiderbar" slot="start"><s-scroll-view class="unselectable" style="height: 100%; padding-bottom: 1rem;">
       <s-card id="_pmd-slot_1" type="" class="sidebar_head">
-        <div slot="image"><img data-ui-img="true" src="${conf.sidebar.solt_1.src}"></div>
+        <div slot="image"><img class="ui-img" src="${conf.sidebar.solt_1.src}"></div>
         <div slot="headline"><span class='sidebar_username_bg'>${conf.sidebar.solt_1.alt}</span></div>
       </s-card>
       <s-card id="_pmd-slot_2" type="" class="sidebar_head">${conf.sidebar.solt_2.innerHTML}</s-card>
@@ -487,6 +492,33 @@ function msg(Message, ConfirmBtnText, isWarning, duration, onclick, align, icon)
   customElements.get("s-snackbar").builder(infoJSON);
   return infoJSON;
 };
+
+//img元素处理
+document.querySelectorAll("img").forEach((imgElement) => {
+  imgElement.addEventListener("error", () => {
+    if (imgElement.dataset.pmdError == "true") { return; };
+    imgElement.dataset.pmdError = "true";
+    imgElement.dataset.origin = imgElement.src;
+    imgElement.src = conf.img.error;
+  });
+  imgElement.addEventListener("click", () => {
+    if (imgElement.dataset.pmdError == "true") {
+      imgElement.dataset.pmdError = "";
+      imgElement.src = imgElement.dataset.origin;
+    } else {
+      if (conf.img.view) {
+        imgElement.dataset.visit = imgElement.src;
+        if (conf.img.imgse_com.enabled) {
+          imgElement.dataset.visit = imgElement.dataset.visit.replace(/\.md\./, ".");
+        };
+        if (conf.img.imgse_com.detail && /ax1x\.com/.test(imgElement.dataset.visit)) {
+          imgElement.dataset.visit = `https://imgse.com/i/` + imgElement.dataset.visit.replace(/\.md\./, ".").split("/").pop().split(".")[0];
+        };
+        openURL(imgElement.dataset.visit, false);
+      };
+    };
+  });
+});
 
 //移动View on Github按钮
 if (conf.info.view_on_github && !!pmdElements.content.origin.header.view_on_github) {
