@@ -57,15 +57,15 @@ const conf = {
   sidebar: {
     solt_1: {
       /*左侧边栏·第1格·背景图片*/
-      src: `https://s21.ax1x.com/2024/05/24/pkQwAte.jpg`,
+      src: `https://bing.img.run/1920x1080.php`,
       /*左侧边栏·第1格·背景图片描述*/
-      alt: `FireFly`,
+      alt: `Pages Markdown reRender`,
     },
     solt_2: {
       /*左侧边栏·第2格内容*/
       innerHTML:`
         <s-chip id="side_ship_0" onclick="openURL('/',true)" clickable="true" class="sidebar_btn">
-          <s-icon slot="start" type="home"></s-icon>
+          <s-icon slot="start" name="home"></s-icon>
           主页 Homepage</s-chip>
         <s-chip id="side_ship_1" onclick="openURL('/blogs',true)" clickable="true" class="sidebar_btn">
           <s-icon slot="start"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960"><path d="M320-320h480v-120H698q-21 37-58 58.5T560-360q-42 0-79-21.5T422-440H320v120Zm240-120q34 0 57-23.5t23-56.5h160v-280H320v280h160q0 33 23.5 56.5T560-440ZM320-240q-33 0-56.5-23.5T240-320v-480q0-33 23.5-56.5T320-880h480q33 0 56.5 23.5T880-800v480q0 33-23.5 56.5T800-240H320ZM160-80q-33 0-56.5-23.5T80-160v-560h80v560h560v80H160Zm160-240h480-480Z"></path></svg></s-icon>
@@ -140,6 +140,14 @@ document.body.innerHTML = `
     animation-name: fadeOut;
   }
 </style><style id="_pmd-style-ui">
+  body {
+    background-repeat: no-repeat;
+    background-size: cover;
+    -webkit-background-size: cover;
+    -o-background-size: cover;
+    background-position: center 0;
+    background-attachment: fixed;
+  }
   html::-webkit-scrollbar {
     width: 0;
     height: 0;
