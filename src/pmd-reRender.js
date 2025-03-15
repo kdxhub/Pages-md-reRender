@@ -398,7 +398,7 @@ function msg(Message, ConfirmBtnText, isWarning, duration, onclick, align, icon)
   if (duration) {infoJSON.duration = parseInt(duration.toString());};
   if (onclick) {infoJSON.action.click = onclick;};
   if (align) {infoJSON.align = ["auto", "top", "bottom"][ align.toString().match(/\d+/) % 3 ];};
-  if (icon) {infoJSON.icon = icon;};s
+  if (icon) {infoJSON.icon = icon;};
   customElements.get("s-snackbar").builder(infoJSON);
   return infoJSON;
 };
@@ -533,6 +533,24 @@ function RefreshCountup(countupY, countupM, countupD) {
 if (conf.info.time[0] && !conf.sidebar.replacement) {
   pmdElements.content.lsidebar.slot4._.timeCountInterval = setInterval(() => {RefreshCountup(conf.info.time[1],conf.info.time[2],conf.info.time[3])}, 1000);
 } else {pmdElements.content.lsidebar.slot4.time.remove();};
+
+//向复制内容末尾添加版权声明
+if (!!conf.copy.endnote) {
+  endnote = conf.copy.endnote
+    /*占位符替换*/
+    .replace(/%LINK%/, window.location)
+    .replace(/%TITLE%/, pmdElements.appbar.title.innerHTML)
+    .replace(/%ETITLE%/, pmdElements.content.origin.header.main.innerHTML);
+  document.addEventListener('copy', async (event) => {
+    try {
+      await navigator.clipboard.writeText(window.getSelection().toString() + endnote);
+      msg(`已复制文本，请注意遵守授权协议 ${conf.info.licen.what}。`, `好`);
+    } catch (err) {
+      msg("复制失败，无法访问剪贴板。", "好", true);
+      console.error(err);
+    }
+  });
+};
 
 //页面初始化
 updataAppbar();
