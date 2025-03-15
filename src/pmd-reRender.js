@@ -15,18 +15,14 @@ const conf = {
     },
     /*自定义CSS样式*/
     style: ``,
-    travellingsAPI/* TODO，启用无效 */: {
-      /*提供「开往」API支持（只能添加符合开往规范的页面元素需自行申请加入）*/
-      enabled: false,
-      /*「开往」落地页URL（只能填写官方页面，否则要么自行修改代码要么自动禁用）*/
-      custom: "",
-    },
     CloudflareAPI/* TODO，启用无效 */: {
       /*在脚注中显示Cloudflare节点信息，需要你的站点经过其代理*/
       enabled: false,
       /*Cloudflare节点信息映射表，一般不需要改动*/
       nodes: false,
     },
+    /*KDX-Shared User Interface标识符（启用后会在同样使用了pmd的网站间共享用户侧设置）*/
+    kdxSharedUI: true,
   },
   code: {
   /*在代码块下方添加复制代码按钮*/
@@ -266,13 +262,20 @@ document.body.innerHTML = `
         <div slot="headline"><span class='sidebar_username_bg'>${conf.sidebar.solt_1.alt}</span></div>
       </s-card>
       <s-card id="_pmd-slot_2" type="" class="sidebar_head">${conf.sidebar.solt_2.innerHTML}</s-card>
-      <s-card id="_pmd-slot_3" type="" class="sidebar_head" id="_pmd-index_links_sidebarSlot">
-        <s-fold folded="true">
+      <s-card id="_pmd-slot_3" type="" class="sidebar_head">
+        <s-fold folded="true" id="_pmd-index_links_parent">
           <s-chip slot="trigger" clickable="true" class="sidebar_btn">
             <s-icon slot="start"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960"><path d="M240-80q-50 0-85-35t-35-85v-560q0-50 35-85t85-35h440v640H240q-17 0-28.5 11.5T200-200q0 17 11.5 28.5T240-160h520v-640h80v720H240Zm120-240h240v-480H360v480Zm-80 0v-480h-40q-17 0-28.5 11.5T200-760v447q10-3 19.5-5t20.5-2h40Zm-80-480v487-487Z"></path></svg></s-icon>
             目录
           </s-chip>
-          <div id="_pmd-index_links_parent"><ul id="_pmd-index_links"></ul></div>
+          <div id="_pmd-index_links"><ul></ul></div>
+        </s-fold>
+        <s-fold folded="true" id="_pmd-user_setting_parent">
+          <s-chip slot="trigger" clickable="true" class="sidebar_btn">
+            <s-icon slot="start"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960"><path d="m370-80-16-128q-13-5-24.5-12T307-235l-119 50L78-375l103-78q-1-7-1-13.5v-27q0-6.5 1-13.5L78-585l110-190 119 50q11-8 23-15t24-12l16-128h220l16 128q13 5 24.5 12t22.5 15l119-50 110 190-103 78q1 7 1 13.5v27q0 6.5-2 13.5l103 78-110 190-118-50q-11 8-23 15t-24 12L590-80H370Zm70-80h79l14-106q31-8 57.5-23.5T639-327l99 41 39-68-86-65q5-14 7-29.5t2-31.5q0-16-2-31.5t-7-29.5l86-65-39-68-99 42q-22-23-48.5-38.5T533-694l-13-106h-79l-14 106q-31 8-57.5 23.5T321-633l-99-41-39 68 86 64q-5 15-7 30t-2 32q0 16 2 31t7 30l-86 65 39 68 99-42q22 23 48.5 38.5T427-266l13 106Zm42-180q58 0 99-41t41-99q0-58-41-99t-99-41q-59 0-99.5 41T342-480q0 58 40.5 99t99.5 41Zm-2-140Z"></path></svg></s-icon>
+            阅读设置
+          </s-chip>
+          <div id="_pmd-user_settings"><ul id="_pmd-index_links"></ul></div>
         </s-fold>
       </s-card>
       <s-card id="_pmd-slot_4" type="" class="sidebar_head">
@@ -312,8 +315,22 @@ const pmdElements = {
       root: document.getElementById("_pmd-LeftSiderbar"),
       slot1: document.getElementById("_pmd-slot_1"),
       slot2: document.getElementById("_pmd-slot_2"),
-      slot3: document.getElementById("_pmd-slot_3"),
+      slot3: {
+        root: document.getElementById("_pmd-slot_3"),
+        index_links: {
+          root: document.getElementById("_pmd-index_links_parent"),
+          sub: document.getElementById("_pmd-index_links"),
+        },
+        user_setting: {
+          root: document.getElementById("_pmd-user_setting_parent"),
+          sub: document.getElementById("_pmd-user_settings"),
+        },
+        travellings: document.getElementById("_pmd-travellings"),
+      },
       slot4: {
+        _: {
+          timeCountInterval: -1,
+        },
         root: document.getElementById("_pmd-slot_4"),
         saying: document.getElementById("_pmd-slot_4_saying"),
         time: document.getElementById("_pmd-slot_4_time"),
@@ -442,7 +459,6 @@ if (!!pmdElements.pageConfig) {
 };
 
 //blockquote高级语法
-// blockquote高级语法
 if (conf.hyper_markdown.quotepro[0]) {
   let quoteproReg = /\[(?:@|！|!|i|x|#(?:[0-9a-f]{3}){1,2}(\$[\s\S]*)*)\]/i;
   let iconMap = {
@@ -483,6 +499,22 @@ if (conf.hyper_markdown.quotepro[0]) {
     }
   });
 };
+
+//建站时长刷新
+function RefreshCountup(countupY, countupM, countupD) {
+  /*计算时间差，JS月份从0开始要减1*/
+  let timeDifference = Date.now() - new Date(countupY, countupM - 1, countupD);
+  /*转换日期差*/
+  let countupD_ = Math.floor(timeDifference / (1000 * 60 * 60 * 24));
+  let countupH = Math.floor((timeDifference % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+  let countupM_ = Math.floor((timeDifference % (1000 * 60 * 60)) / (1000 * 60));
+  let countupS = Math.floor((timeDifference % (1000 * 60)) / 1000);
+  /*更新显示*/
+  pmdElements.content.lsidebar.slot4.time.innerHTML = `<center><small>本站已建立${countupD_}天${countupH}小时${countupM_}分钟${countupS}秒</small></center>`;
+};
+if (conf.info.time[0] && !conf.sidebar.replacement) {
+  pmdElements.content.lsidebar.slot4._.timeCountInterval = setInterval(() => {RefreshCountup(conf.info.time[1],conf.info.time[2],conf.info.time[3])}, 1000);
+} else {pmdElements.content.lsidebar.slot4.time.remove();};
 
 //页面初始化
 updataAppbar();
