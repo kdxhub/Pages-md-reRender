@@ -107,7 +107,7 @@ const conf = {
       /*如果链接含有 ฿ 则将其修改为新标签页打开*/
       target_replace: true,
       /*外链图标*/
-      icon: `<s-icon class: "newWindowOpen"><svg xmlns: "http://www.w3.org/2000/svg" viewBox: "0 -960 960 960"><path d: "M200-120q-33 0-56.5-23.5T120-200v-560q0-33 23.5-56.5T200-840h280v80H200v560h560v-280h80v280q0 33-23.5 56.5T760-120H200Zm188-212-56-56 372-372H560v-80h280v280h-80v-144L388-332Z"></path></svg></s-icon>`,
+      icon: `<s-icon><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960"><path d="M200-120q-33 0-56.5-23.5T120-200v-560q0-33 23.5-56.5T200-840h280v80H200v560h560v-280h80v280q0 33-23.5 56.5T760-120H200Zm188-212-56-56 372-372H560v-80h280v280h-80v-144L388-332Z"></path></svg></s-icon>`,
     },
   },
   index: {
@@ -125,6 +125,7 @@ const /*插件版本（建议不要修改）*/PluginVer=["2.0.0",18];
 document.body.innerHTML = `
 <!-- Pages Markdown Re-Render -->
 <!-- 页面重渲染插入代码开始 -->
+<style id="_pmd-style-dynamic"></style>
 <style id="_pmd-style-animation">
   @keyframes fadeIn {
     from {opacity: 0;}
@@ -238,6 +239,17 @@ document.body.innerHTML = `
   }
   .headerProcessed:hover > .headerLinkBtn {
     opacity: 1;
+  }
+  a {
+    text-decoration: underline dotted;
+  }
+  a:hover {
+    text-decoration: underline;
+  }
+  a s-icon {
+    width: 1em;
+    height: 1em;
+    transform: translateY(-0.05em) translateX(-0.05em);
   }
 </style><style id="_pmd-style-darkmode">
   @media not (prefers-color-scheme: dark) {
@@ -372,6 +384,7 @@ document.body.innerHTML = `
 const pmdElements = {
   pageRoot: document.getElementById("_pmd-pageRoot"),
   style: {
+    _: document.getElementById("_pmd-style-dynamic"),
     animation: document.getElementById("_pmd-style-animation"),
     ui: document.getElementById("_pmd-style-ui"),
     darkmode: document.getElementById("_pmd-style-darkmode"),
@@ -564,7 +577,7 @@ document.querySelectorAll('#_pmd-originalContent h1, #_pmd-originalContent h2, #
   if (conf.index.enabled) {
     if (hn_level > hn_last_level) /*如果进入下级标题，则需要新建ul*/ { hn_index_cache += `<ul class="index">`.repeat(hn_level - hn_last_level); };
     if (hn_level < hn_last_level) /*如果进入上级标题则结束ul*/ { hn_index_cache += `</ul>`.repeat(hn_last_level - hn_level); };
-    hn_index_cache += `<li class="index"><a href="#${HeaderElement.id}">${HeaderElement.innerHTML}</a></li>`;
+    hn_index_cache += `<li class="index"><a data-ui-a="true" href="#${HeaderElement.id}">${HeaderElement.innerHTML}</a></li>`;
   };
   hn_last_level = hn_level;
   if (conf.hyper_markdown.header_link && !HeaderElement.className/*不处理文章开头的标题*/.includes("project-name")) {
@@ -584,6 +597,24 @@ if (conf.index.sidebar) {
 };
 if /*向具有指定id的元素中写入目录信息*/ (conf.index.sidebar && !!(pmdElements.index_overwrite)) {
   pmdElements.index_overwrite.innerHTML = hn_index_cache;
+};
+
+//a元素新增右上箭头，修改打开位置
+if (conf.link.arrow.enabled) {
+  document.querySelectorAll('a').forEach((aElement) => {
+    if (conf.link.arrow.target_replace && /\u0e3f/.test(aElement.innerHTML)) {
+      aElement.target = "_blank";
+    };
+    if (conf.link.arrow.replace) {
+      aElement.innerHTML = aElement.innerHTML.replace(/[\u2197\u0024\u0e3f]/, conf.link.arrow.icon);
+      return;
+    };
+    if (
+      /*排除指向章节锚点的链接*/ /#/.test(aElement.src)
+      ||/*排除不在新窗口打开的链接*/ aElement.target != "_blank"
+    ) { return; };
+    aElement.innerHTML = aElement.innerHTML.replace(/\u0e3f/, "") + conf.link.arrow.icon;
+  });
 };
 
 //blockquote高级语法
