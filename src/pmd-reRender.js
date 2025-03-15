@@ -15,6 +15,18 @@ const conf = {
     },
     /*自定义CSS样式*/
     style: ``,
+    travellingsAPI/* TODO，启用无效 */: {
+      /*提供「开往」API支持（只能添加符合开往规范的页面元素需自行申请加入）*/
+      enabled: false,
+      /*「开往」落地页URL（只能填写官方页面，否则要么自行修改代码要么自动禁用）*/
+      custom: "",
+    },
+    CloudflareAPI/* TODO，启用无效 */: {
+      /*在脚注中显示Cloudflare节点信息，需要你的站点经过其代理*/
+      enabled: false,
+      /*Cloudflare节点信息映射表，一般不需要改动*/
+      nodes: false,
+    },
   },
   code: {
   /*在代码块下方添加复制代码按钮*/
@@ -51,9 +63,9 @@ const conf = {
   sidebar: {
     solt_1: {
       /*左侧边栏·第1格·背景图片*/
-      src: ``,
+      src: `https://s21.ax1x.com/2024/05/24/pkQwAte.jpg`,
       /*左侧边栏·第1格·背景图片描述*/
-      alt: ``,
+      alt: `FireFly`,
     },
     solt_2: {
       /*左侧边栏·第2格内容*/
