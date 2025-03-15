@@ -3,6 +3,8 @@
 // 自定义设置项区 详见文档：https://kdxiaoyi.top/Pages-md-reRender/global-conf (有待更新)
 const conf = {
   info: {
+    /*浏览器语言检测覆写*/
+    lang: "zh-hans",
     /*启用建站时长计时 [是否启用t/f,年,月,日]*/
     time: [false,2022,7,20],
     /*左侧边栏·一言*/
@@ -188,6 +190,17 @@ document.body.innerHTML = `
     background-color: rgba(255, 255, 255, 0);
     background-image: linear-gradient(120deg, rgba(255, 255, 255, 0), rgba(255, 255, 255, 0));
   }
+  .site-footer {
+    padding: 0 5% 0.1rem 5%;
+    text-align: right;
+    width: 100%;
+    word-wrap: break-word;
+    color: #819198;
+    border-top: 0px;
+  }
+  .site-footer>p {
+    padding: 0 20px 0 20px;
+  }
 </style><style id="_pmd-style-darkmode">
   @media not (prefers-color-scheme: dark) {
     body {
@@ -198,7 +211,7 @@ document.body.innerHTML = `
       backdrop-filter: blur(${conf.img.background.blur}px);
     }
     .sidebar_username_bg {
-    background:rgba(250,253,252,0.5);
+    background:rgba(250,253,252,${conf.img.background.alpha[1]});
     }
   }
   @media (prefers-color-scheme: dark) {
@@ -206,16 +219,31 @@ document.body.innerHTML = `
       background: url(${conf.img.background.src});
     }
     #_pmd-pageRoot {
-      background: rgba(250,253,252,${conf.img.background.alpha[1]});
+      background: rgba(5,2,3,${conf.img.background.alpha[1]});
       backdrop-filter: blur(${conf.img.background.blur}px);
     * {
       color-scheme:dark;
     }
     .sidebar_username_bg {
-      background:rgba(5,2,3,0.5);
+      background:rgba(5,2,3,${conf.img.background.alpha[1]});
     }
-    pre {
-      --pre-bg-color:rbg(25 26 28);
+    .highlight {
+      background-color: rgb(39 43 42);
+    }
+    .highlight .kd {
+      color: #ffffff;
+    }
+    .highlight .kv {
+      color: #ffffff;
+    }
+    .highlight .k {
+      color: #ffffff;
+    }
+    .highlight .o {
+      color: #ffffff;
+    }
+    .highlight .nt {
+      color: #0080ff;
     }
     .page-header {
       --header-font-color: #f8f8f8;
@@ -247,9 +275,9 @@ document.body.innerHTML = `
       </s-icon-button>
       切换侧栏
     </s-tooltip>
-    <div id="_pmd-pageTitle" slot="headline"> Title </div>
+    <div id="_pmd-pageTitle" style="opacity: 0;" slot="headline"> Title </div>
     <s-tooltip slot="action">
-      <s-icon-button id="_pmd-toTopBtn" style="display: none;" type="outlined" slot="trigger">
+      <s-icon-button id="_pmd-toTopBtn" class="fadeOut" style="opacity: 0;" type="outlined" slot="trigger">
         <s-icon name="chevron_up"></s-icon>
       </s-icon-button>
       回到顶部
@@ -261,8 +289,8 @@ document.body.innerHTML = `
       在 Github.com 上查看
     </s-tooltip>
     </s-appbar>
-  <s-drawer id="_pmd-mainContent" class="custom-scroll">
-    <div id="_pmd-LeftSiderbar" slot="start">
+  <s-drawer id="_pmd-mainContent">
+    <div id="_pmd-LeftSiderbar" slot="start"><s-scroll-view class="unselectable" style="height: 100%; padding-bottom: 1rem;">
       <s-card id="_pmd-slot_1" type="" class="sidebar_head">
         <div slot="image"><img data-ui-img="true" src="${conf.sidebar.solt_1.src}"></div>
         <div slot="headline"><span class='sidebar_username_bg'>${conf.sidebar.solt_1.alt}</span></div>
@@ -276,12 +304,13 @@ document.body.innerHTML = `
           </s-chip>
           <div id="_pmd-index_links"><ul></ul></div>
         </s-fold>
-        <s-fold folded="true" id="_pmd-user_setting_parent">
+        <s-fold style="display:none" folded="true" id="_pmd-user_setting_parent">
           <s-chip slot="trigger" clickable="true" class="sidebar_btn">
             <s-icon slot="start"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960"><path d="m370-80-16-128q-13-5-24.5-12T307-235l-119 50L78-375l103-78q-1-7-1-13.5v-27q0-6.5 1-13.5L78-585l110-190 119 50q11-8 23-15t24-12l16-128h220l16 128q13 5 24.5 12t22.5 15l119-50 110 190-103 78q1 7 1 13.5v27q0 6.5-2 13.5l103 78-110 190-118-50q-11 8-23 15t-24 12L590-80H370Zm70-80h79l14-106q31-8 57.5-23.5T639-327l99 41 39-68-86-65q5-14 7-29.5t2-31.5q0-16-2-31.5t-7-29.5l86-65-39-68-99 42q-22-23-48.5-38.5T533-694l-13-106h-79l-14 106q-31 8-57.5 23.5T321-633l-99-41-39 68 86 64q-5 15-7 30t-2 32q0 16 2 31t7 30l-86 65 39 68 99-42q22 23 48.5 38.5T427-266l13 106Zm42-180q58 0 99-41t41-99q0-58-41-99t-99-41q-59 0-99.5 41T342-480q0 58 40.5 99t99.5 41Zm-2-140Z"></path></svg></s-icon>
             阅读设置
           </s-chip>
-          <div id="_pmd-user_settings"><ul id="_pmd-index_links"></ul></div>
+          <div id="_pmd-user_settings">
+          </div>
         </s-fold>
       </s-card>
       <s-card id="_pmd-slot_4" type="" class="sidebar_head">
@@ -289,9 +318,12 @@ document.body.innerHTML = `
         <div id="_pmd-slot_4_time"><center><small>Since 2022-07-19</small></center></div>
         <div id="_pmd-slot_4_license"><center><small>以<a href="${conf.info.licen.link}">${conf.info.licen.what}</a>协议提供内容</small></center></div>
       </s-card>
-    </div>
+    </div></s-scroll-view>
     <s-scroll-view id="_pmd-originalContent" class="selectable">
+      <!-- 页面重渲染插入代码暂停 -->
       ${document.body.innerHTML}
+      <!-- 页面重渲染插入代码继续 -->
+      <footer class="site-footer unselectable"><s-divider></s-divider><p><small>${conf.hyper_markdown.footer}<br>Powered by <a data-arrow-bypass="true" herf="https://github.com/kdxhub/Pages-md-reRender" target="_blank">Pages Markdown reRender</a>.</small></p></footer>
     </s-scroll-view>
   </s-drawer>
 </s-page>
@@ -333,6 +365,7 @@ const pmdElements = {
         user_setting: {
           root: document.getElementById("_pmd-user_setting_parent"),
           sub: document.getElementById("_pmd-user_settings"),
+          color: document.getElementById("_pmd-user_settings__color"),
         },
         travellings: document.getElementById("_pmd-travellings"),
       },
