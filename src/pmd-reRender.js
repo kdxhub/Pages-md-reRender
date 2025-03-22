@@ -50,7 +50,7 @@ const conf = {
       src: "https://s21.ax1x.com/2024/05/24/pkQwAte.jpg",
       /*背景图片遮罩透明度，分别为亮色和暗色遮罩，范围0~1*/
       alpha: [0.8, 0.82],
-      /*背景图片模糊度，为-1禁用*/
+      /*背景图片模糊度，为-1禁用；注意所有模糊效果都能被用户禁用*/
       blur: -1,
     },
   },
@@ -60,6 +60,8 @@ const conf = {
       src: `https://bing.img.run/1920x1080.php`,
       /*左侧边栏·第1格·背景图片描述*/
       alt: `Pages Markdown reRender`,
+      /*左侧边栏·第1格·描述文案背景，依次亮色透明度、暗色透明度、亮色模糊度、暗色模糊度*/
+      background: [0.8, 0.82, -1, -1],
     },
     solt_2: {
       /*左侧边栏·第2格内容*/
@@ -88,7 +90,7 @@ const conf = {
     /*在标题的最后添加一个按钮以复制链接指向这个标题*/
     header_link: true,
     /*在页面底端增加文章脚注，为空不额外添加*/
-    footer: ``,
+    footer: `这是一个脚注<bold></bold>`,
     /*检查引用部分高级语法，详见文档*/
     quotepro: [true,`#1A73E7`,`#FBC116`,`#E23B2E`,`#30C496`],
   },
@@ -114,7 +116,7 @@ const conf = {
 /*在复制的文本结尾追加文字，见文档*/
 conf.copy.endnote = ` ‖ 来自[%ETITLE%](%LINK%)，以${conf.info.licen.what}协议授权。`;
 
-const /*插件版本（建议不要修改）*/PluginVer=["2.0.0",18];
+const /*插件版本（建议不要修改）*/PluginVer=["2.1.0Beta",19];
 
 document.body.innerHTML = `
 <!-- Pages Markdown Re-Render -->
@@ -569,6 +571,9 @@ function scrollToTop() {
 };
 pmdElements.appbar.toTopBtn.addEventListener("click", scrollToTop);
 
+//设置页面标题
+pmdElements.appbar.title.innerHTML = pmdElements.content.origin.header.main.innerHTML;
+
 //检查页面设置元素并应用
 if (!!pmdElements.pageConfig) {
   if ((!conf.sidebar.solt_2.preventDefault) && (Math.floor(pmdElements.pageConfig.dataset.sideshipHide) >= 0)) {
@@ -581,8 +586,6 @@ if (!!pmdElements.pageConfig) {
   if (pmdElements.pageConfig.hasAttribute("data-title")) {
     /* title Str 强制覆写UI标题，若不存在则使用文章标题 */
     pmdElements.appbar.title.innerHTML = pmdElements.pageConfig.dataset.title;
-  } else {
-    pmdElements.appbar.title.innerHTML = pmdElements.content.origin.header.main.innerHTML;
   };
   if (!!pmdElements.pageConfig.dataset.redirect) {
     /* redirect 重定向中间页 */
