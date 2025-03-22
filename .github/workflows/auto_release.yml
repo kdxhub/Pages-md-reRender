@@ -11,62 +11,40 @@ jobs:
 
     steps:
     - name: Checkout repository
-      uses: actions/checkout@v2
+      uses: actions/checkout@v3
 
-    - name: Set up Node.js
-      uses: actions/setup-node@v2
-      with:
-        node-version: '14'
-
-    - name: Get plugin version
-      id: get_version
+    - name: Validate files exist
       run: |
-        version=$(cat src/.version)
-        echo "::set-output name=VERSION::$version"
-        if [[ "$version" == *"preview"* || "$version" == *"beta"* || "$version" == *"dev"* ]]; then
-          echo "::set-output name=PRERELEASE::true"
+        test -f src/.version || exit 1
+        test -f src/.motd || exit 1
+        test -f src/pmd-reRender.min.js || exit 1
+        test -f src/pmd-reRender.js || exit 1
+        test -f src/sober@1.0.6.min.js || exit 1
+
+    - name: Get version info
+      id: version
+      run: |
+        VERSION=$(cat src/.version)
+        MOTD=$(cat src/.motd | sed 's/$/\\n/' | tr -d '\n')
+        echo "version=${VERSION}" >> $GITHUB_OUTPUT
+        echo "motd=${MOTD}" >> $GITHUB_OUTPUT
+        
+        if [[ "$VERSION" == *"preview"* || "$VERSION" == *"beta"* || "$VERSION" == *"dev"* ]]; then
+          echo "prerelease=true" >> $GITHUB_OUTPUT
         else
-          echo "::set-output name=PRERELEASE::false"
+          echo "prerelease=false" >> $GITHUB_OUTPUT
         fi
 
     - name: Create Release
-      id: create_release
-      uses: actions/create-release@v1
+      uses: softprops/action-gh-release@v1
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
-        tag_name: v${{ steps.get_version.outputs.VERSION }}
-        release_name: Release v${{ steps.get_version.outputs.VERSION }}
-        draft: false
-        prerelease: ${{ steps.get_version.outputs.PRERELEASE }}
-        body: $(cat src/.motd)
-
-    - name: Upload pmd-reRender.min.js
-      uses: actions/upload-release-asset@v1
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      with:
-        upload_url: ${{ steps.create_release.outputs.upload_url }}
-        asset_path: src/pmd-reRender.min.js
-        asset_name: pmd-reRender.min.js
-        asset_content_type: application/javascript
-
-    - name: Upload pmd-reRender.js
-      uses: actions/upload-release-asset@v1
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      with:
-        upload_url: ${{ steps.create_release.outputs.upload_url }}
-        asset_path: src/pmd-reRender.js
-        asset_name: pmd-reRender.js
-        asset_content_type: application/javascript
-
-    - name: Upload SoberJS
-      uses: actions/upload-release-asset@v1
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      with:
-        upload_url: ${{ steps.create_release.outputs.upload_url }}
-        asset_path: src/sober@1.0.6.min.js
-        asset_name: sober@1.0.6.min.js
-        asset_content_type: application/javascript
+        tag_name: v${{ steps.version.outputs.version }}
+        name: Release v${{ steps.version.outputs.version }}
+        prerelease: ${{ steps.version.outputs.prerelease == 'true' }}
+        body: ${{ steps.version.outputs.motd }}
+        files: |
+          src/pmd-reRender.min.js
+          src/pmd-reRender.js
+          src/sober@1.0.6.min.js
