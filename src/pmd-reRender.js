@@ -142,6 +142,24 @@ document.body.innerHTML = `
     animation-name: fadeOut;
   }
 </style><style id="_pmd-style-ui">
+  @media print {
+    #_pmd-appbarRoot {display: none !important;}
+    #_pmd-LeftSiderbar {display: none !important;}
+    .site-footer {display: none !important;}
+    #_pmd-originalContent {height: min-content !important;}
+    #_pmd-pageRoot {height: min-content !important;}
+    #_pmd-mainContent {height: min-content !important;}
+    body {
+      height: min-content !important;
+      background-image: none !important;
+    }
+    html {height: min-content !important;}
+  }
+  @page {
+    @top-right {
+      content: "页 " counter(pageNumber);
+    }
+  }
   body {
     background-repeat: no-repeat;
     background-size: cover;
