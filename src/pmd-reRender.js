@@ -189,6 +189,7 @@ document.body.innerHTML = `
   }
   .main-content {
     max-width: 100%;
+    min-width: 100%
   }
   .page-header {
     background-color: rgba(255, 255, 255, 0);
