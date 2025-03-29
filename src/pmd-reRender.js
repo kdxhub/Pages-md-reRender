@@ -492,6 +492,102 @@ const pmdElements = {
 
 //通用函数
 function getQueryString(name) { let reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)", "i"); let r = window.location.search.substr(1).match(reg); if (r != null) { return unescape(r[2]); }; return null; };
+const Storage = {
+  Cookies: {
+    set: function (key, value, expires, path) {
+      const cookieStr = `${encodeURIComponent(key)}=${encodeURIComponent(value)}`;
+      if (expires) {
+        const date = new Date();
+        date.setTime(date.getTime() + expires * 1000);
+        document.cookie = `${cookieStr}; expires=${date.toUTCString()}; path=${path}`;
+      } else {
+        document.cookie = `${cookieStr}; path=${path}`;
+      }
+    },
+    get: function (key) {
+      const cookies = document.cookie.split('; ');
+      for (const cookie of cookies) {
+        const [cookieKey, cookieValue] = cookie.split('=', 2);
+        if (decodeURIComponent(cookieKey) === key) {
+          return decodeURIComponent(cookieValue);
+        }
+      }
+      return null;
+    },
+    remove: function (key) {
+      this.set(key, '', { expires: -1 });
+    },
+    getAll: function () {
+      const cookies = document.cookie.split('; ');
+      const result = {};
+      for (const cookie of cookies) {
+        const [cookieKey, cookieValue] = cookie.split('=', 2);
+        result[decodeURIComponent(cookieKey)] = decodeURIComponent(cookieValue);
+      }
+      return result;
+    },
+    reset_dangerous: function () {
+      const cookies = this.getAll();
+      for (const key in cookies) {
+        this.remove(key);
+      }
+    }
+  },
+  Local: {
+    set: function (key, value) {
+      localStorage.setItem(key, JSON.stringify(value));
+    },
+    get: function (key) {
+      const value = localStorage.getItem(key);
+      try {
+        return JSON.parse(value);
+      } catch (e) {
+        return value;
+      }
+    },
+    remove: function (key) {
+      localStorage.removeItem(key);
+    },
+    getAll: function () {
+      const result = {};
+      for (let i = 0; i < localStorage.length; i++) {
+        const key = localStorage.key(i);
+        result[key] = this.get(key);
+      }
+      return result;
+    },
+    reset_dangerous: function () {
+      localStorage.clear();
+    }
+  },
+  Session: {
+    set: function (key, value) {
+      sessionStorage.setItem(key, JSON.stringify(value));
+    },
+    get: function (key) {
+      const value = sessionStorage.getItem(key);
+      try {
+        return JSON.parse(value);
+      } catch (e) {
+        return value;
+      }
+    },
+    remove: function (key) {
+      sessionStorage.removeItem(key);
+    },
+    getAll: function () {
+      const result = {};
+      for (let i = 0; i < sessionStorage.length; i++) {
+        const key = sessionStorage.key(i);
+        result[key] = this.get(key);
+      }
+      return result;
+    },
+    reset_dangerous: function () {
+      sessionStorage.clear();
+    }
+  }
+};
 function openURL(URI, IsInPresentWindow) {
   let linkEle = document.createElement("a");
   if (!!IsInPresentWindow) {
