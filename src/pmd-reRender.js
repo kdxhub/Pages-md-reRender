@@ -893,15 +893,17 @@ if (!!conf.copy.endnote) {
     .replace(/%LINK%/, window.location)
     .replace(/%TITLE%/, pmdElements.appbar.title.innerHTML)
     .replace(/%ETITLE%/, pmdElements.content.origin.header.main.innerHTML);
-  document.addEventListener('copy', async (event) => {
-    try {
-      await navigator.clipboard.writeText(window.getSelection().toString() + endnote);
-      msg(`已复制文本，请注意遵守授权协议 ${conf.info.licen.what}。`, `好`);
-    } catch (err) {
-      msg("复制失败，无法访问剪贴板。", "好", true);
-      console.error(err);
-    }
-  });
+  document.addEventListener('DOMContentLoaded', function() {
+    document.addEventListener('copy', async (event) => {
+      try {
+        await navigator.clipboard.writeText(window.getSelection().toString() + endnote);
+        msg(`已复制文本，请注意遵守授权协议 ${conf.info.licen.what}。`, `好`);
+      } catch (err) {
+        msg("复制失败，无法访问剪贴板。", "好", true);
+        console.error(err);
+      }
+    });
+  });  
 };
 
 //页面初始化
