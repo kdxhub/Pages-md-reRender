@@ -775,6 +775,59 @@ if (conf.link.arrow.enabled) {
   });
 };
 
+//code元素新增复制到剪贴板按钮
+function selectAllTextInElement(element) {
+  /*选中一个元素内所有的文本*/
+  let range = document.createRange();
+  range.selectNodeContents(element);
+  let selection = window.getSelection();
+  selection.removeAllRanges();
+  selection.addRange(range);
+};
+function copyBtnDone(copyBtn, text) {
+  /*copyBtn点击后动画*/
+  copyBtn.setAttribute("type","filled-tonal");
+  copyBtn.innerHTML=`<s-icon name="done" slot="start"></s-icon>${conf.code.done}`;
+  setTimeout(()=>{
+    copyBtn.setAttribute("type","elevated");
+    copyBtn.innerHTML=`<s-icon slot="start"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960"><path d="M360-240q-33 0-56.5-23.5T280-320v-480q0-33 23.5-56.5T360-880h360q33 0 56.5 23.5T800-800v480q0 33-23.5 56.5T720-240H360Zm0-80h360v-480H360v480ZM200-80q-33 0-56.5-23.5T120-160v-560h80v560h440v80H200Zm160-240v-480 480Z"></path></svg></s-icon>${conf.code.tip}`;
+    if (text==window.getSelection().toString()) {
+      window.getSelection().removeAllRanges();
+    };
+  },5000);
+};
+if (conf.code.enabled) { /*添加Copy按钮并添加绑定*/
+document.querySelectorAll('code').forEach((codeElement) => {
+  if (/*不是代码块就跳过*/
+    (codeElement./*检查语法高亮是否存在*/querySelectorAll('span').length == 0)
+    && !(codeElement.parentNode && codeElement.parentNode.nodeName === 'PRE')
+  ) {return;};
+  codeElement.parentNode.parentNode.parentNode.style.margin="5px 0 5px 0";
+  codeElement.classList.add("processed");/*添加标志位*/
+  /*为CopyBtn添加属性*/
+  let copyCodeBtn = document.createElement('s-chip');
+  copyCodeBtn.setAttribute("type","elevated");
+  copyCodeBtn.setAttribute("class","font-default");
+  copyCodeBtn.setAttribute("clickable","true");
+  if /*检查Cilpboard API状态*/ (!navigator.clipboard) {copyCodeBtn.setAttribute("clickable","false");};
+  copyCodeBtn.innerHTML=`<s-icon slot="start"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960"><path d="M360-240q-33 0-56.5-23.5T280-320v-480q0-33 23.5-56.5T360-880h360q33 0 56.5 23.5T800-800v480q0 33-23.5 56.5T720-240H360Zm0-80h360v-480H360v480ZM200-80q-33 0-56.5-23.5T120-160v-560h80v560h440v80H200Zm160-240v-480 480Z"></path></svg></s-icon>${conf.code.tip}`;
+  /*添加事件绑定*/
+  copyCodeBtn.addEventListener('click',() => {
+    window.getSelection().removeAllRanges();
+    /*先选中代码块内全部代码，再利用Cilpboard API写入已经选中的内容，从而实现保留格式的代码复制*/
+    selectAllTextInElement(copyCodeBtn.parentElement.querySelectorAll("code")[0]);
+    navigator.clipboard.writeText(window.getSelection().toString()).then(
+      function () {/* clipboard successfully set */
+        copyBtnDone(copyCodeBtn,window.getSelection().toString());
+      },function () {/* clipboard write failed */
+        msg("没有授予剪贴板权限…", "好", true);
+      },
+    );
+  });
+  /*将准备完成的CopyBtn插入到代码块中*/
+  codeElement.parentNode.insertBefore(copyCodeBtn, codeElement.nextSibling);
+});};
+
 //blockquote高级语法
 if (conf.hyper_markdown.quotepro[0]) {
   let quoteproReg = /\[(?:@|！|!|i|x|#(?:[0-9a-f]{3}){1,2}(\$[\s\S]*)*)\]/i;
