@@ -57,11 +57,13 @@ const conf = {
   sidebar: {
     solt_1: {
       /*左侧边栏·第1格·背景图片*/
-      src: `https://bing.img.run/1920x1080.php`,
+      src: `https://www.todaybing.com/api/today/cn?size=mhd`,
       /*左侧边栏·第1格·背景图片描述*/
       alt: `Pages Markdown reRender`,
       /*左侧边栏·第1格·描述文案背景，依次亮色透明度、暗色透明度、亮色模糊度、暗色模糊度*/
       background: [0.8, 0.82, -1, -1],
+      /*左侧边栏·第1格·图片标题（悬浮提示内容）*/
+      title: "Bing每日一图，来自第三方API",
     },
     solt_2: {
       /*左侧边栏·第2格内容*/
@@ -196,12 +198,19 @@ document.body.innerHTML = `
     display: flex;
     flex-direction: column;
   }
+  .sidebar_img {
+    width: 100%;
+    height: 100%;
+  }
   .sidebar_head {
     display: flex;
     flex-direction: column;
     width:94%;
     padding: 3px 3px 3px 3px;
     margin: 3% 3% 0% 3%;
+  }
+  .sidebar_head > div[slot=headline] {
+    margin: 0 16px 0;
   }
   .sidebar_btn {
     width:100%;
@@ -365,7 +374,7 @@ document.body.innerHTML = `
   <s-drawer id="_pmd-mainContent">
     <div id="_pmd-LeftSiderbar" slot="start"><s-scroll-view class="unselectable" style="height: 100%; padding-bottom: 1rem;">
       <s-card id="_pmd-slot_1" type="" class="sidebar_head">
-        <div slot="image"><img class="ui-img" src="${conf.sidebar.solt_1.src}"></div>
+        <div slot="image"><img title="${conf.sidebar.solt_1.title}" alt="${conf.sidebar.solt_1.alt}" class="ui-img sidebar_img" pmduiimg="true" src="${conf.sidebar.solt_1.src}"></div>
         <div slot="headline"><span>${conf.sidebar.solt_1.alt}</span></div>
       </s-card>
       <s-card id="_pmd-slot_2" type="" class="sidebar_head">${conf.sidebar.solt_2.innerHTML}</s-card>
@@ -519,23 +528,25 @@ document.querySelectorAll("img").forEach((imgElement) => {
     imgElement.dataset.origin = imgElement.src;
     imgElement.src = conf.img.error;
   });
-  imgElement.addEventListener("click", () => {
-    if (imgElement.dataset.pmdError == "true") {
-      imgElement.dataset.pmdError = "";
-      imgElement.src = imgElement.dataset.origin;
-    } else {
-      if (conf.img.view) {
-        imgElement.dataset.visit = imgElement.src;
-        if (conf.img.imgse_com.enabled) {
-          imgElement.dataset.visit = imgElement.dataset.visit.replace(/\.md\./, ".");
+  if (imgElement.dataset.pmduiimg == "true") {
+    imgElement.addEventListener("click", () => {
+      if (imgElement.dataset.pmdError == "true") {
+        imgElement.dataset.pmdError = "";
+        imgElement.src = imgElement.dataset.origin;
+      } else {
+        if (conf.img.view) {
+          imgElement.dataset.visit = imgElement.src;
+          if (conf.img.imgse_com.enabled) {
+            imgElement.dataset.visit = imgElement.dataset.visit.replace(/\.md\./, ".");
+          };
+          if (conf.img.imgse_com.detail && /ax1x\.com/.test(imgElement.dataset.visit)) {
+            imgElement.dataset.visit = `https://imgse.com/i/` + imgElement.dataset.visit.replace(/\.md\./, ".").split("/").pop().split(".")[0];
+          };
+          openURL(imgElement.dataset.visit, false);
         };
-        if (conf.img.imgse_com.detail && /ax1x\.com/.test(imgElement.dataset.visit)) {
-          imgElement.dataset.visit = `https://imgse.com/i/` + imgElement.dataset.visit.replace(/\.md\./, ".").split("/").pop().split(".")[0];
-        };
-        openURL(imgElement.dataset.visit, false);
       };
-    };
-  });
+    });
+  };
 });
 
 //移动View on Github按钮
