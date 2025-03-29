@@ -118,7 +118,7 @@ const conf = {
 /*在复制的文本结尾追加文字，见文档*/
 conf.copy.endnote = ` ‖ 来自[%ETITLE%](%LINK%)，以${conf.info.licen.what}协议授权。`;
 
-const /*插件版本（建议不要修改）*/PluginVer=["2.1.0Beta",19];
+const /*插件版本（建议不要修改）*/PluginVer=["2.1.0",20];
 
 const pmdStorage={Cookies:{set:function(e,t,o,n){const s=`${encodeURIComponent(e)}=${encodeURIComponent(t)}`;if(o){const e=new Date;e.setTime(e.getTime()+1e3*o),document.cookie=`${s}; expires=${e.toUTCString()}; path=${n}`}else document.cookie=`${s}; path=${n}`},get:function(e){const t=document.cookie.split("; ");for(const o of t){const[t,n]=o.split("=",2);if(decodeURIComponent(t)===e)return decodeURIComponent(n)}return null},remove:function(e){this.set(e,"",{expires:-1})},getAll:function(){const e=document.cookie.split("; "),t={};for(const o of e){const[e,n]=o.split("=",2);t[decodeURIComponent(e)]=decodeURIComponent(n)}return t},reset_dangerous:function(){const e=this.getAll();for(const t in e)this.remove(t)}},Local:{set:function(e,t){localStorage.setItem(e,JSON.stringify(t))},get:function(e){const t=localStorage.getItem(e);try{return JSON.parse(t)}catch(e){return t}},remove:function(e){localStorage.removeItem(e)},getAll:function(){const e={};for(let t=0;t<localStorage.length;t++){const o=localStorage.key(t);e[o]=this.get(o)}return e},reset_dangerous:function(){localStorage.clear()}},Session:{set:function(e,t){sessionStorage.setItem(e,JSON.stringify(t))},get:function(e){const t=sessionStorage.getItem(e);try{return JSON.parse(t)}catch(e){return t}},remove:function(e){sessionStorage.removeItem(e)},getAll:function(){const e={};for(let t=0;t<sessionStorage.length;t++){const o=sessionStorage.key(t);e[o]=this.get(o)}return e},reset_dangerous:function(){sessionStorage.clear()}}};
 document.body.innerHTML = `
@@ -548,7 +548,8 @@ if (!!pmdStorage.Cookies.get("pmd-prefer_color_theme")) {
   /*如果检测到Cookies中相关设置则启用用户偏好配色*/
   if (pmdStorage.Cookies.get("pmd-prefer_color_theme") == "dark") {
     pmdElements.content.lsidebar.slot3.user_setting.color.root.value = "dark";
-  } else {
+  };
+  if (pmdStorage.Cookies.get("pmd-prefer_color_theme") == "light") {
     pmdElements.content.lsidebar.slot3.user_setting.color.root.value = "light";
   };
 };
