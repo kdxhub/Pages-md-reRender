@@ -120,6 +120,7 @@ conf.copy.endnote = ` ‖ 来自[%ETITLE%](%LINK%)，以${conf.info.licen.what}�
 
 const /*插件版本（建议不要修改）*/PluginVer=["2.1.0Beta",19];
 
+const pmdStorage={Cookies:{set:function(e,t,o,n){const s=`${encodeURIComponent(e)}=${encodeURIComponent(t)}`;if(o){const e=new Date;e.setTime(e.getTime()+1e3*o),document.cookie=`${s}; expires=${e.toUTCString()}; path=${n}`}else document.cookie=`${s}; path=${n}`},get:function(e){const t=document.cookie.split("; ");for(const o of t){const[t,n]=o.split("=",2);if(decodeURIComponent(t)===e)return decodeURIComponent(n)}return null},remove:function(e){this.set(e,"",{expires:-1})},getAll:function(){const e=document.cookie.split("; "),t={};for(const o of e){const[e,n]=o.split("=",2);t[decodeURIComponent(e)]=decodeURIComponent(n)}return t},reset_dangerous:function(){const e=this.getAll();for(const t in e)this.remove(t)}},Local:{set:function(e,t){localStorage.setItem(e,JSON.stringify(t))},get:function(e){const t=localStorage.getItem(e);try{return JSON.parse(t)}catch(e){return t}},remove:function(e){localStorage.removeItem(e)},getAll:function(){const e={};for(let t=0;t<localStorage.length;t++){const o=localStorage.key(t);e[o]=this.get(o)}return e},reset_dangerous:function(){localStorage.clear()}},Session:{set:function(e,t){sessionStorage.setItem(e,JSON.stringify(t))},get:function(e){const t=sessionStorage.getItem(e);try{return JSON.parse(t)}catch(e){return t}},remove:function(e){sessionStorage.removeItem(e)},getAll:function(){const e={};for(let t=0;t<sessionStorage.length;t++){const o=sessionStorage.key(t);e[o]=this.get(o)}return e},reset_dangerous:function(){sessionStorage.clear()}}};
 document.body.innerHTML = `
 <!-- Pages Markdown Re-Render -->
 <!-- 页面重渲染插入代码开始 -->
@@ -347,7 +348,7 @@ document.body.innerHTML = `
     margin-bottom: 0.4rem;
   }
 </style><style id="_pmd-style-custom">${conf.info.style}</style>
-<s-page class="unselectable page_root" id="_pmd-pageRoot" theme="light">
+<s-page class="unselectable page_root" id="_pmd-pageRoot" theme="${pmdStorage.Cookies.get("pmd-prefer_color_theme")}">
   <s-appbar id="_pmd-appbarRoot">
     <s-tooltip slot="navigation">
       <s-icon-button id="_pmd-menuBtn" type="filled-tonal" slot="trigger" onclick="document.querySelector('s-drawer').toggle()">
@@ -384,15 +385,15 @@ document.body.innerHTML = `
           </s-chip>
           <div id="_pmd-user_settings">
             <s-navigation id="_pmd-color_theme_prefer" style="background: none;">
-              <s-navigation-item selected="true">
+              <s-navigation-item id="_pmd-color_theme_prefer_a" value="auto" selected="true">
                 <s-icon slot="icon"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960"><path d="M312-320h64l32-92h146l32 92h62L512-680h-64L312-320Zm114-144 52-150h4l52 150H426Zm54 436L346-160H160v-186L28-480l132-134v-186h186l134-132 134 132h186v186l132 134-132 134v186H614L480-28Zm0-112 100-100h140v-140l100-100-100-100v-140H580L480-820 380-720H240v140L140-480l100 100v140h140l100 100Zm0-340Z"></path></svg></s-icon>
                 <div slot="text">自动</div>
               </s-navigation-item>
-              <s-navigation-item>
+              <s-navigation-item id="_pmd-color_theme_prefer_l" value="light">
                 <s-icon name="light_mode" slot="icon"></s-icon>
                 <div slot="text">白昼</div>
               </s-navigation-item>
-              <s-navigation-item>
+              <s-navigation-item id="_pmd-color_theme_prefer_d" value="dark">
                 <s-icon name="dark_mode" slot="icon"></s-icon>
                 <div slot="text">极夜</div>
               </s-navigation-item>
@@ -460,7 +461,12 @@ const pmdElements = {
         user_setting: {
           root: document.getElementById("_pmd-user_setting_parent"),
           sub: document.getElementById("_pmd-user_settings"),
-          color: document.getElementById("_pmd-color_theme_prefer"),
+          color: {
+            root: document.getElementById("_pmd-color_theme_prefer"),
+            auto: document.getElementById("_pmd-color_theme_prefer_a"),
+            light: document.getElementById("_pmd-color_theme_prefer_l"),
+            dark: document.getElementById("_pmd-color_theme_prefer_d"),
+          },
         },
         travellings: document.getElementById("_pmd-travellings"),
       },
@@ -504,102 +510,6 @@ const pmdElements = {
 
 //通用函数
 function getQueryString(name) { let reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)", "i"); let r = window.location.search.substr(1).match(reg); if (r != null) { return unescape(r[2]); }; return null; };
-const Storage = {
-  Cookies: {
-    set: function (key, value, expires, path) {
-      const cookieStr = `${encodeURIComponent(key)}=${encodeURIComponent(value)}`;
-      if (expires) {
-        const date = new Date();
-        date.setTime(date.getTime() + expires * 1000);
-        document.cookie = `${cookieStr}; expires=${date.toUTCString()}; path=${path}`;
-      } else {
-        document.cookie = `${cookieStr}; path=${path}`;
-      }
-    },
-    get: function (key) {
-      const cookies = document.cookie.split('; ');
-      for (const cookie of cookies) {
-        const [cookieKey, cookieValue] = cookie.split('=', 2);
-        if (decodeURIComponent(cookieKey) === key) {
-          return decodeURIComponent(cookieValue);
-        }
-      }
-      return null;
-    },
-    remove: function (key) {
-      this.set(key, '', { expires: -1 });
-    },
-    getAll: function () {
-      const cookies = document.cookie.split('; ');
-      const result = {};
-      for (const cookie of cookies) {
-        const [cookieKey, cookieValue] = cookie.split('=', 2);
-        result[decodeURIComponent(cookieKey)] = decodeURIComponent(cookieValue);
-      }
-      return result;
-    },
-    reset_dangerous: function () {
-      const cookies = this.getAll();
-      for (const key in cookies) {
-        this.remove(key);
-      }
-    }
-  },
-  Local: {
-    set: function (key, value) {
-      localStorage.setItem(key, JSON.stringify(value));
-    },
-    get: function (key) {
-      const value = localStorage.getItem(key);
-      try {
-        return JSON.parse(value);
-      } catch (e) {
-        return value;
-      }
-    },
-    remove: function (key) {
-      localStorage.removeItem(key);
-    },
-    getAll: function () {
-      const result = {};
-      for (let i = 0; i < localStorage.length; i++) {
-        const key = localStorage.key(i);
-        result[key] = this.get(key);
-      }
-      return result;
-    },
-    reset_dangerous: function () {
-      localStorage.clear();
-    }
-  },
-  Session: {
-    set: function (key, value) {
-      sessionStorage.setItem(key, JSON.stringify(value));
-    },
-    get: function (key) {
-      const value = sessionStorage.getItem(key);
-      try {
-        return JSON.parse(value);
-      } catch (e) {
-        return value;
-      }
-    },
-    remove: function (key) {
-      sessionStorage.removeItem(key);
-    },
-    getAll: function () {
-      const result = {};
-      for (let i = 0; i < sessionStorage.length; i++) {
-        const key = sessionStorage.key(i);
-        result[key] = this.get(key);
-      }
-      return result;
-    },
-    reset_dangerous: function () {
-      sessionStorage.clear();
-    }
-  }
-};
 function openURL(URI, IsInPresentWindow) {
   let linkEle = document.createElement("a");
   if (!!IsInPresentWindow) {
@@ -628,20 +538,46 @@ function msg(Message, ConfirmBtnText, isWarning, duration, onclick, align, icon)
   return infoJSON;
 };
 
-//应用颜色方案
+//应用配色方案
 /*TODO: sober1.0.6的bug,在head内没有style元素时无法执行s-page的toggle方法，见于https://github.com/apprat/sober/issues/38 ，所以在新版本发布前需要这一条临时修复*/ document.head.insertBefore(document.createElement('style'), document.head.firstChild);
 function ChangeColorTheme(target, animationCenter) {
   if /* 若传入无效动画中心元素则指定为侧栏按钮 */ (!(animationCenter instanceof HTMLElement)) { animationCenter = pmdElements.appbar.menuBtn; };
   return pmdElements.pageRoot.toggle(target, animationCenter);
 };
+if (!!pmdStorage.Cookies.get("pmd-prefer_color_theme")) {
+  /*如果检测到Cookies中相关设置则启用用户偏好配色*/
+  if (pmdStorage.Cookies.get("pmd-prefer_color_theme") == "dark") {
+    pmdElements.content.lsidebar.slot3.user_setting.color.root.value = "dark";
+  } else {
+    pmdElements.content.lsidebar.slot3.user_setting.color.root.value = "light";
+  };
+};
 window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => {
+  if (pmdElements.content.lsidebar.slot3.user_setting.color.root.value != "auto") {return;};
   if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
     ChangeColorTheme("dark");
   } else {
     ChangeColorTheme("light");
   };
 });
-
+pmdElements.content.lsidebar.slot3.user_setting.color.root.addEventListener("change", () => {
+  if (pmdElements.content.lsidebar.slot3.user_setting.color.root.value == "auto") {
+    if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+      ChangeColorTheme("dark", pmdElements.content.lsidebar.slot3.user_setting.color.auto);
+    } else {
+      ChangeColorTheme("light", pmdElements.content.lsidebar.slot3.user_setting.color.auto);
+    };
+    pmdStorage.Cookies.set("pmd-prefer_color_theme", "auto", 2147483647, "/");
+  };
+  if (pmdElements.content.lsidebar.slot3.user_setting.color.root.value == "dark") {
+    ChangeColorTheme("dark", pmdElements.content.lsidebar.slot3.user_setting.color.dark);
+    pmdStorage.Cookies.set("pmd-prefer_color_theme", "dark", 2147483647, "/");
+  };
+  if (pmdElements.content.lsidebar.slot3.user_setting.color.root.value == "light") {
+    ChangeColorTheme("light", pmdElements.content.lsidebar.slot3.user_setting.color.light);
+    pmdStorage.Cookies.set("pmd-prefer_color_theme", "light", 2147483647, "/");
+  };
+});
 
 //img元素处理
 document.querySelectorAll("img").forEach((imgElement) => {
