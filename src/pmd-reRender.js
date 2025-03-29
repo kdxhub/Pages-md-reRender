@@ -418,7 +418,7 @@ document.body.innerHTML = `
       <!-- 页面重渲染插入代码暂停 -->
       ${document.body.innerHTML}
       <!-- 页面重渲染插入代码继续 -->
-      <footer class="site-footer unselectable"><s-divider></s-divider><p><small>${conf.hyper_markdown.footer}<br>Powered by <a data-arrow-bypass="true" herf="https://github.com/kdxhub/Pages-md-reRender" target="_blank">Pages Markdown reRender</a>.</small></p></footer>
+      <footer class="site-footer unselectable"><s-divider></s-divider><p><small>${conf.hyper_markdown.footer}<br>Powered by <a data-arrow-bypass="true" href="https://github.com/kdxhub/Pages-md-reRender" target="_blank">Pages Markdown reRender</a>.</small></p></footer>
     </s-scroll-view>
   </s-drawer>
 </s-page>
