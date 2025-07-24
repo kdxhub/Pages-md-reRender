@@ -2,6 +2,10 @@
 title: "Pages-md-reRender"
 description: "一款极其轻量且低侵入的Github Pages主题"
 ---
+
+# 严重警告
+**此系列文档已严重过时，且包含很多错误，不建议继续阅读**
+
 # 开始使用
 开始使用Pages-md-reRender十分简单，您仅需完成若干步骤。<br>
 * 将脚本文件存放到您站点的Script目录内。
